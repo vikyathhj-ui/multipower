@@ -1,0 +1,17 @@
+{
+    "DESIGN_NAME": "top_power_v3",
+    "VERILOG_FILES": [
+        "dir::src/iso_cells.v",
+        "dir::src/power_manager_v3.v",
+        "dir::src/dsp_domain_v3.v",
+        "dir::src/mem_domain_v3.v",
+        "dir::src/top_power_v3.v"
+    ],
+    "CLOCK_PORT": "clk",
+    "CLOCK_PERIOD": 20.0,
+    "PDK": "sky130A",
+    "STD_CELL_LIBRARY": "sky130_fd_sc_hd",
+    "FP_SIZING": "relative",
+    "FP_CORE_UTIL": 40,
+    "PL_TARGET_DENSITY_PCT": 45
+}

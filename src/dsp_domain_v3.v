@@ -41,7 +41,7 @@ assign raw_valid   = valid_reg;
 assign domain_busy = (op_count != 0);
 
 // Retention register count (fixed: accumulator=32, op_count=4)
-always @(posedge clk) retained_reg_count = 8'd36;
+always @(posedge clk) retained_reg_count <= 8'd36;
 
 // Save to retention
 always @(posedge clk or posedge rst) begin
