@@ -3,7 +3,7 @@
 Single source of truth for status. Update this before every commit.
 Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's default branch).
 
-**Current state (2026-11-01): Phase 1 spec CONFIRMED by the owner (DECISIONS D-003). Phase 0+1 PR open; Phase 2 (RTL) in progress.**
+**Current state (2026-11-01): Phase 2 (RTL) gate passed, committed locally. It will be pushed after PR #1 (Phases 0+1) is merged; Phase 3 (formal, then simulation) next.**
 
 ## Phase 0 — Setup and audit
 - [x] Environment check (`scripts/env_check.sh` → `results/env_check.txt`): all tools found. The repo
@@ -28,10 +28,13 @@ Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's def
 - [x] **Gate:** owner confirmed the spec (all 10 [decision] items, D-003). Commit, push, open PR.
 
 ## Phase 2 — RTL
-- [ ] `rtl/pmu_top.sv`, `apb_regs.sv`, `pd_ctrl.sv` (× `N_PD`), `qch_master.sv`, `inrush_arb.sv`,
-      `wake_ctrl.sv`, `cells/icg_wrap.sv`, `cells/iso_wrap.sv`.
-- [ ] FSM encoding justified, no latches, reset strategy documented (DECISIONS).
-- [ ] **Gate:** `verilator --lint-only -Wall` clean. Commit.
+- [x] `rtl/pmu_top.sv`, `apb_regs.sv`, `pd_ctrl.sv` (× `N_PD`), `qch_master.sv`, `inrush_arb.sv`,
+      `wake_ctrl.sv`, `cells/icg_wrap.sv`, `cells/iso_wrap.sv`; plus `sync_ff.sv`, `rst_sync.sv` and the
+      generated `pmu_regmap_pkg.sv`. Structure in `docs/MICROARCH.md`.
+- [x] FSM encoding (D-005), reset strategy (D-006), synchronisers (D-007), cell wrappers (D-008),
+      delay counting (D-010). No latches (Yosys check with the sky130 wrappers).
+- [x] **Gate:** `make lint`: `verilator --lint-only -Wall` clean in 4 parameter configurations, with 3
+      justified inline waivers (D-009); Yosys synth keeps 3 `dlclkp_1` + 9 `lpflow_inputiso0p_1`.
 
 ## Phase 3 — Formal, then simulation
 - [ ] `formal/pmu_props.sv`: properties 1–9 PROVEN, covers reached.
@@ -61,5 +64,7 @@ Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's def
 - [ ] Final PR; then ask about renaming the repo to `soc-pmu-sequencer`.
 
 ## Open issues
+- The Phase 1 register-map outputs in PR #1 contain the YAML ON/OFF bug (D-011); the fix is in the
+  Phase 2 commit.
 - `lpflow` isolation cells are excluded by LibreLane's sky130 config. Whether a wrapper instance
   survives synthesis and PnR is to be checked in Phase 2/4 (BRIEF rule 6 if not).

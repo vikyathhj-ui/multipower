@@ -34,7 +34,7 @@ APB3 completer, 32-bit data, `PADDR[11:0]`, word-aligned. Access types: **RO** r
 
 **mode**: RUN = 0, IDLE = 1, SLEEP = 2, DEEP_SLEEP = 3, SHUTDOWN = 4
 
-**pd_state**: True = 0, CLK_GATED = 1, RET = 2, False = 3, FAULT = 7
+**pd_state**: ON = 0, CLK_GATED = 1, RET = 2, OFF = 3, FAULT = 7
 
 **fault_step**: QACCEPT_DOWN = 1, QDENY_RELEASE = 2, PSW_MAIN_OFF = 3, PSW_TRICKLE_OFF = 4, PSW_TRICKLE_ON = 5, PSW_MAIN_ON = 6, QACCEPT_UP = 7
 

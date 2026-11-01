@@ -20,10 +20,10 @@ enums:
     DEEP_SLEEP: 3
     SHUTDOWN: 4
   pd_state:                        # PD_STATE per-domain field encoding
-    ON: 0
+    'ON': 0
     CLK_GATED: 1
     RET: 2
-    OFF: 3
+    'OFF': 3
     FAULT: 7                       # 4-6: transitional (PD_STATE.BUSY=1 while in a sequence)
   fault_step:                      # FAULT_INFO.STEP: the wait step that timed out
     QACCEPT_DOWN: 1                # waiting for QACCEPTn=0 (or QDENY=1) after QREQn=0

@@ -1,0 +1,10 @@
+# Lint summary (Verilator 5.050 2026-07-01 rev v5.050)
+PASS  verilator -Wall -GN_PD=3 -GHAS_RET=3'b011
+PASS  verilator -Wall -GN_PD=2 -GHAS_RET=2'b01
+PASS  verilator -Wall -GN_PD=4 -GHAS_RET=4'b0011
+PASS  verilator -Wall -GN_PD=3 -GHAS_RET=3'b011 -GSYNC_STAGES=3
+PASS  yosys synth (PMU_SKY130_CELLS), no latches
+      4011 cells
+      3   sky130_fd_sc_hd__dlclkp_1
+      9   sky130_fd_sc_hd__lpflow_inputiso0p_1
+RESULT: PASS

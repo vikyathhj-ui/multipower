@@ -16,10 +16,10 @@
 #define PMU_MODE_DEEP_SLEEP 3u
 #define PMU_MODE_SHUTDOWN 4u
 
-#define PMU_PD_STATE_True 0u
+#define PMU_PD_STATE_ON 0u
 #define PMU_PD_STATE_CLK_GATED 1u
 #define PMU_PD_STATE_RET 2u
-#define PMU_PD_STATE_False 3u
+#define PMU_PD_STATE_OFF 3u
 #define PMU_PD_STATE_FAULT 7u
 
 #define PMU_FAULT_STEP_QACCEPT_DOWN 1u
