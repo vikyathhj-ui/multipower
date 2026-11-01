@@ -1,0 +1,105 @@
+{
+  "result": "PASS with open items",
+  "open_items": [
+    "formal covers: INCOMPLETE (17 reached; see results/formal/summary.json)"
+  ],
+  "problems": [],
+  "checks": {
+    "lint": {
+      "result": "PASS",
+      "configs": 4,
+      "source": "results/lint_summary.txt"
+    },
+    "simulation": {
+      "result": "PASS",
+      "tests": 10,
+      "failed": [],
+      "per_test": {
+        "test_reset_and_registers": {
+          "status": "PASS",
+          "sequences_checked": 3,
+          "errors": 0,
+          "detail": null
+        },
+        "test_apb_errors": {
+          "status": "PASS",
+          "sequences_checked": 3,
+          "errors": 0,
+          "detail": "1003 unmapped addresses"
+        },
+        "test_transition_matrix": {
+          "status": "PASS",
+          "sequences_checked": 107,
+          "errors": 0,
+          "detail": null
+        },
+        "test_deny_every_step": {
+          "status": "PASS",
+          "sequences_checked": 100,
+          "errors": 0,
+          "detail": "14 deny cases"
+        },
+        "test_timeout_every_wait": {
+          "status": "PASS",
+          "sequences_checked": 417,
+          "errors": 0,
+          "detail": "21 timeout cases"
+        },
+        "test_wake_race": {
+          "status": "PASS",
+          "sequences_checked": 546,
+          "errors": 0,
+          "detail": null
+        },
+        "test_wake_sources": {
+          "status": "PASS",
+          "sequences_checked": 15,
+          "errors": 0,
+          "detail": null
+        },
+        "test_reset_while_on": {
+          "status": "PASS",
+          "sequences_checked": 147,
+          "errors": 0,
+          "detail": "48 resets"
+        },
+        "test_soak": {
+          "status": "PASS",
+          "sequences_checked": 20779,
+          "errors": 0,
+          "detail": "10000 requests, 3516 end-state checks"
+        }
+      },
+      "soak_requests": 10000,
+      "sequences_checked": 22117,
+      "source": "results/sim/icarus.xml"
+    },
+    "coverage": {
+      "percent": 100.0,
+      "bins": 137,
+      "covered": 137,
+      "missed": {},
+      "source": "results/coverage/icarus.json"
+    },
+    "formal": {
+      "result": "FAIL",
+      "proofs": "PASS",
+      "covers": "INCOMPLETE",
+      "covers_reached": 17,
+      "tasks": {
+        "prove": "PASS",
+        "live": "PASS",
+        "cover": "INCOMPLETE"
+      },
+      "source": "results/formal/summary.json"
+    },
+    "mutation": {
+      "result": "PASS",
+      "mutants": 12,
+      "missed": [
+        "control"
+      ],
+      "source": "results/mutation.json"
+    }
+  }
+}

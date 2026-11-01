@@ -1,0 +1,143 @@
+{
+  "bins": 137,
+  "covered": 137,
+  "percent": 100.0,
+  "points": {
+    "transition": {
+      "bins": 25,
+      "covered": 25,
+      "percent": 100.0,
+      "missed": [],
+      "ignored": []
+    },
+    "dom_seq": {
+      "bins": 32,
+      "covered": 32,
+      "percent": 100.0,
+      "missed": [],
+      "ignored": [
+        {
+          "bin": [
+            2,
+            "pd_ret"
+          ],
+          "reason": "PD_PERI has no retention (BRIEF A2)"
+        },
+        {
+          "bin": [
+            2,
+            "cg_ret"
+          ],
+          "reason": "PD_PERI has no retention (BRIEF A2)"
+        },
+        {
+          "bin": [
+            2,
+            "pu_rest"
+          ],
+          "reason": "PD_PERI has no retention (BRIEF A2)"
+        },
+        {
+          "bin": [
+            2,
+            "ret_off"
+          ],
+          "reason": "PD_PERI has no retention (BRIEF A2)"
+        }
+      ]
+    },
+    "deny_loc": {
+      "bins": 8,
+      "covered": 8,
+      "percent": 100.0,
+      "missed": [],
+      "ignored": [
+        {
+          "bin": [
+            2,
+            "RET"
+          ],
+          "reason": "no mode puts PD_PERI in RET"
+        }
+      ]
+    },
+    "fault_loc": {
+      "bins": 21,
+      "covered": 21,
+      "percent": 100.0,
+      "missed": [],
+      "ignored": []
+    },
+    "reg_access": {
+      "bins": 46,
+      "covered": 46,
+      "percent": 100.0,
+      "missed": [],
+      "ignored": [
+        {
+          "bin": [
+            "ID",
+            "write",
+            "ok"
+          ],
+          "reason": "read-only register"
+        },
+        {
+          "bin": [
+            "VERSION",
+            "write",
+            "ok"
+          ],
+          "reason": "read-only register"
+        },
+        {
+          "bin": [
+            "MODE_STATUS",
+            "write",
+            "ok"
+          ],
+          "reason": "read-only register"
+        },
+        {
+          "bin": [
+            "PD_STATE",
+            "write",
+            "ok"
+          ],
+          "reason": "read-only register"
+        },
+        {
+          "bin": [
+            "WAKE_TIMER",
+            "write",
+            "ok"
+          ],
+          "reason": "read-only register"
+        },
+        {
+          "bin": [
+            "FAULT_INFO",
+            "write",
+            "ok"
+          ],
+          "reason": "read-only register"
+        }
+      ]
+    },
+    "power_up": {
+      "bins": 5,
+      "covered": 5,
+      "percent": 100.0,
+      "missed": [],
+      "ignored": [
+        {
+          "bin": [
+            2,
+            true
+          ],
+          "reason": "PD_PERI has no retention"
+        }
+      ]
+    }
+  }
+}

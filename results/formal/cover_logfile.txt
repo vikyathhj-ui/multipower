@@ -1,0 +1,231 @@
+SBY  9:06:57 [pmu_cover] Removing directory '/foss/projects/multipower/formal/pmu_cover'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/pmu_regmap_pkg.sv' to '/foss/projects/multipower/formal/pmu_cover/src/pmu_regmap_pkg.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/sync_ff.sv' to '/foss/projects/multipower/formal/pmu_cover/src/sync_ff.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/rst_sync.sv' to '/foss/projects/multipower/formal/pmu_cover/src/rst_sync.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/cells/icg_wrap.sv' to '/foss/projects/multipower/formal/pmu_cover/src/icg_wrap.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/cells/iso_wrap.sv' to '/foss/projects/multipower/formal/pmu_cover/src/iso_wrap.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/qch_master.sv' to '/foss/projects/multipower/formal/pmu_cover/src/qch_master.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/inrush_arb.sv' to '/foss/projects/multipower/formal/pmu_cover/src/inrush_arb.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/wake_ctrl.sv' to '/foss/projects/multipower/formal/pmu_cover/src/wake_ctrl.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/pd_ctrl.sv' to '/foss/projects/multipower/formal/pmu_cover/src/pd_ctrl.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/apb_regs.sv' to '/foss/projects/multipower/formal/pmu_cover/src/apb_regs.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/../rtl/pmu_top.sv' to '/foss/projects/multipower/formal/pmu_cover/src/pmu_top.sv'.
+SBY  9:06:57 [pmu_cover] Copy '/foss/projects/multipower/formal/pmu_props.sv' to '/foss/projects/multipower/formal/pmu_cover/src/pmu_props.sv'.
+SBY  9:06:57 [pmu_cover] engine_0: smtbmc yices
+SBY  9:06:57 [pmu_cover] base: starting process "cd pmu_cover/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY  9:06:57 [pmu_cover] base: finished (returncode=0)
+SBY  9:06:57 [pmu_cover] prep: starting process "cd pmu_cover/model; yosys -ql design_prep.log design_prep.ys"
+SBY  9:06:57 [pmu_cover] prep: finished (returncode=0)
+SBY  9:06:57 [pmu_cover] smt2: starting process "cd pmu_cover/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY  9:06:57 [pmu_cover] smt2: finished (returncode=0)
+SBY  9:06:57 [pmu_cover] engine_0: starting process "cd pmu_cover; yosys-smtbmc -s yices --presat --unroll -c --noprogress -t 80  --append 0 --dump-vcd engine_0/trace%.vcd --dump-yw engine_0/trace%.yw --dump-vlogtb engine_0/trace%_tb.v --dump-smtc engine_0/trace%.smtc model/design_smt2.smt2"
+SBY  9:06:57 [pmu_cover] engine_0: ##   0:00:00  Solver: yices
+SBY  9:06:57 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 0..
+SBY  9:06:57 [pmu_cover] engine_0: ##   0:00:00  Reached cover statement in step 0 at pmu_top: u_props.g_d[0].c_off
+SBY  9:06:57 [pmu_cover] engine_0: ##   0:00:00  Reached cover statement in step 0 at pmu_top: u_props.g_d[1].c_off
+SBY  9:06:57 [pmu_cover] engine_0: ##   0:00:00  Reached cover statement in step 0 at pmu_top: u_props.g_d[2].c_off
+SBY  9:06:57 [pmu_cover] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace0.vcd
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace0_tb.v
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace0.smtc
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace0.yw
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 0..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 1..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 2..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 3..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 4..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 5..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 6..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 7..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Reached cover statement in step 7 at pmu_top: u_props.g_d[0].c_fault
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Writing trace to VCD file: engine_0/trace1.vcd
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Writing trace to Verilog testbench: engine_0/trace1_tb.v
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Writing trace to constraints file: engine_0/trace1.smtc
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Writing trace to Yosys witness file: engine_0/trace1.yw
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 7..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 8..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 9..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:00  Checking cover reachability in step 10..
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:01  Reached cover statement in step 10 at pmu_top: u_props.g_d[1].c_fault
+SBY  9:06:58 [pmu_cover] engine_0: ##   0:00:01  Writing trace to VCD file: engine_0/trace2.vcd
+SBY  9:06:59 [pmu_cover] engine_0: ##   0:00:01  Writing trace to Verilog testbench: engine_0/trace2_tb.v
+SBY  9:06:59 [pmu_cover] engine_0: ##   0:00:01  Writing trace to constraints file: engine_0/trace2.smtc
+SBY  9:06:59 [pmu_cover] engine_0: ##   0:00:01  Writing trace to Yosys witness file: engine_0/trace2.yw
+SBY  9:06:59 [pmu_cover] engine_0: ##   0:00:01  Checking cover reachability in step 10..
+SBY  9:06:59 [pmu_cover] engine_0: ##   0:00:01  Checking cover reachability in step 11..
+SBY  9:06:59 [pmu_cover] engine_0: ##   0:00:01  Checking cover reachability in step 12..
+SBY  9:06:59 [pmu_cover] engine_0: ##   0:00:01  Checking cover reachability in step 13..
+SBY  9:06:59 [pmu_cover] engine_0: ##   0:00:02  Reached cover statement in step 13 at pmu_top: u_props.g_d[2].c_fault
+SBY  9:06:59 [pmu_cover] engine_0: ##   0:00:02  Writing trace to VCD file: engine_0/trace3.vcd
+SBY  9:07:00 [pmu_cover] engine_0: ##   0:00:02  Writing trace to Verilog testbench: engine_0/trace3_tb.v
+SBY  9:07:00 [pmu_cover] engine_0: ##   0:00:02  Writing trace to constraints file: engine_0/trace3.smtc
+SBY  9:07:00 [pmu_cover] engine_0: ##   0:00:02  Writing trace to Yosys witness file: engine_0/trace3.yw
+SBY  9:07:00 [pmu_cover] engine_0: ##   0:00:02  Checking cover reachability in step 13..
+SBY  9:07:00 [pmu_cover] engine_0: ##   0:00:02  Checking cover reachability in step 14..
+SBY  9:07:01 [pmu_cover] engine_0: ##   0:00:03  Checking cover reachability in step 15..
+SBY  9:07:01 [pmu_cover] engine_0: ##   0:00:03  Checking cover reachability in step 16..
+SBY  9:07:03 [pmu_cover] engine_0: ##   0:00:05  Checking cover reachability in step 17..
+SBY  9:07:04 [pmu_cover] engine_0: ##   0:00:06  Checking cover reachability in step 18..
+SBY  9:07:06 [pmu_cover] engine_0: ##   0:00:08  Checking cover reachability in step 19..
+SBY  9:07:09 [pmu_cover] engine_0: ##   0:00:11  Checking cover reachability in step 20..
+SBY  9:07:11 [pmu_cover] engine_0: ##   0:00:13  Reached cover statement in step 20 at pmu_top: u_props.g_d[0].c_on
+SBY  9:07:11 [pmu_cover] engine_0: ##   0:00:13  Writing trace to VCD file: engine_0/trace4.vcd
+SBY  9:07:12 [pmu_cover] engine_0: ##   0:00:14  Writing trace to Verilog testbench: engine_0/trace4_tb.v
+SBY  9:07:12 [pmu_cover] engine_0: ##   0:00:14  Writing trace to constraints file: engine_0/trace4.smtc
+SBY  9:07:12 [pmu_cover] engine_0: ##   0:00:14  Writing trace to Yosys witness file: engine_0/trace4.yw
+SBY  9:07:12 [pmu_cover] engine_0: ##   0:00:14  Checking cover reachability in step 20..
+SBY  9:07:15 [pmu_cover] engine_0: ##   0:00:17  Checking cover reachability in step 21..
+SBY  9:07:19 [pmu_cover] engine_0: ##   0:00:21  Checking cover reachability in step 22..
+SBY  9:07:25 [pmu_cover] engine_0: ##   0:00:27  Checking cover reachability in step 23..
+SBY  9:07:32 [pmu_cover] engine_0: ##   0:00:34  Reached cover statement in step 23 at pmu_top: u_props.g_d[1].c_on
+SBY  9:07:32 [pmu_cover] engine_0: ##   0:00:34  Writing trace to VCD file: engine_0/trace5.vcd
+SBY  9:07:32 [pmu_cover] engine_0: ##   0:00:34  Writing trace to Verilog testbench: engine_0/trace5_tb.v
+SBY  9:07:32 [pmu_cover] engine_0: ##   0:00:35  Writing trace to constraints file: engine_0/trace5.smtc
+SBY  9:07:32 [pmu_cover] engine_0: ##   0:00:35  Writing trace to Yosys witness file: engine_0/trace5.yw
+SBY  9:07:32 [pmu_cover] engine_0: ##   0:00:35  Checking cover reachability in step 23..
+SBY  9:07:39 [pmu_cover] engine_0: ##   0:00:41  Checking cover reachability in step 24..
+SBY  9:07:46 [pmu_cover] engine_0: ##   0:00:48  Checking cover reachability in step 25..
+SBY  9:07:55 [pmu_cover] engine_0: ##   0:00:57  Checking cover reachability in step 26..
+SBY  9:08:05 [pmu_cover] engine_0: ##   0:01:07  Reached cover statement in step 26 at pmu_top: u_props.g_d[2].c_on
+SBY  9:08:05 [pmu_cover] engine_0: ##   0:01:07  Writing trace to VCD file: engine_0/trace6.vcd
+SBY  9:08:06 [pmu_cover] engine_0: ##   0:01:08  Writing trace to Verilog testbench: engine_0/trace6_tb.v
+SBY  9:08:06 [pmu_cover] engine_0: ##   0:01:08  Writing trace to constraints file: engine_0/trace6.smtc
+SBY  9:08:06 [pmu_cover] engine_0: ##   0:01:08  Writing trace to Yosys witness file: engine_0/trace6.yw
+SBY  9:08:06 [pmu_cover] engine_0: ##   0:01:08  Checking cover reachability in step 26..
+SBY  9:08:17 [pmu_cover] engine_0: ##   0:01:19  Checking cover reachability in step 27..
+SBY  9:08:29 [pmu_cover] engine_0: ##   0:01:31  Reached cover statement in step 27 at pmu_top: u_props.g_d[0].c_cg
+SBY  9:08:29 [pmu_cover] engine_0: ##   0:01:31  Writing trace to VCD file: engine_0/trace7.vcd
+SBY  9:08:30 [pmu_cover] engine_0: ##   0:01:32  Writing trace to Verilog testbench: engine_0/trace7_tb.v
+SBY  9:08:30 [pmu_cover] engine_0: ##   0:01:32  Writing trace to constraints file: engine_0/trace7.smtc
+SBY  9:08:30 [pmu_cover] engine_0: ##   0:01:32  Writing trace to Yosys witness file: engine_0/trace7.yw
+SBY  9:08:30 [pmu_cover] engine_0: ##   0:01:32  Checking cover reachability in step 27..
+SBY  9:08:43 [pmu_cover] engine_0: ##   0:01:45  Checking cover reachability in step 28..
+SBY  9:08:57 [pmu_cover] engine_0: ##   0:01:59  Checking cover reachability in step 29..
+SBY  9:09:13 [pmu_cover] engine_0: ##   0:02:15  Checking cover reachability in step 30..
+SBY  9:09:26 [pmu_cover] engine_0: ##   0:02:28  Reached cover statement in step 30 at pmu_top: u_props.g_d[1].c_cg
+SBY  9:09:26 [pmu_cover] engine_0: ##   0:02:28  Writing trace to VCD file: engine_0/trace8.vcd
+SBY  9:09:27 [pmu_cover] engine_0: ##   0:02:29  Writing trace to Verilog testbench: engine_0/trace8_tb.v
+SBY  9:09:27 [pmu_cover] engine_0: ##   0:02:29  Writing trace to constraints file: engine_0/trace8.smtc
+SBY  9:09:27 [pmu_cover] engine_0: ##   0:02:29  Writing trace to Yosys witness file: engine_0/trace8.yw
+SBY  9:09:27 [pmu_cover] engine_0: ##   0:02:29  Checking cover reachability in step 30..
+SBY  9:09:41 [pmu_cover] engine_0: ##   0:02:43  Reached cover statement in step 30 at pmu_top: u_props.g_d[0].c_deny
+SBY  9:09:41 [pmu_cover] engine_0: ##   0:02:43  Writing trace to VCD file: engine_0/trace9.vcd
+SBY  9:09:42 [pmu_cover] engine_0: ##   0:02:44  Writing trace to Verilog testbench: engine_0/trace9_tb.v
+SBY  9:09:42 [pmu_cover] engine_0: ##   0:02:44  Writing trace to constraints file: engine_0/trace9.smtc
+SBY  9:09:42 [pmu_cover] engine_0: ##   0:02:44  Writing trace to Yosys witness file: engine_0/trace9.yw
+SBY  9:09:42 [pmu_cover] engine_0: ##   0:02:44  Checking cover reachability in step 30..
+SBY  9:09:57 [pmu_cover] engine_0: ##   0:03:00  Checking cover reachability in step 31..
+SBY  9:10:16 [pmu_cover] engine_0: ##   0:03:18  Checking cover reachability in step 32..
+SBY  9:10:37 [pmu_cover] engine_0: ##   0:03:39  Checking cover reachability in step 33..
+SBY  9:11:00 [pmu_cover] engine_0: ##   0:04:02  Reached cover statement in step 33 at pmu_top: u_props.g_d[2].c_cg
+SBY  9:11:00 [pmu_cover] engine_0: ##   0:04:02  Writing trace to VCD file: engine_0/trace10.vcd
+SBY  9:11:01 [pmu_cover] engine_0: ##   0:04:03  Writing trace to Verilog testbench: engine_0/trace10_tb.v
+SBY  9:11:01 [pmu_cover] engine_0: ##   0:04:03  Writing trace to constraints file: engine_0/trace10.smtc
+SBY  9:11:01 [pmu_cover] engine_0: ##   0:04:03  Writing trace to Yosys witness file: engine_0/trace10.yw
+SBY  9:11:01 [pmu_cover] engine_0: ##   0:04:03  Checking cover reachability in step 33..
+SBY  9:11:24 [pmu_cover] engine_0: ##   0:04:26  Reached cover statement in step 33 at pmu_top: u_props.g_d[1].c_deny
+SBY  9:11:24 [pmu_cover] engine_0: ##   0:04:26  Writing trace to VCD file: engine_0/trace11.vcd
+SBY  9:11:25 [pmu_cover] engine_0: ##   0:04:27  Writing trace to Verilog testbench: engine_0/trace11_tb.v
+SBY  9:11:25 [pmu_cover] engine_0: ##   0:04:27  Writing trace to constraints file: engine_0/trace11.smtc
+SBY  9:11:25 [pmu_cover] engine_0: ##   0:04:27  Writing trace to Yosys witness file: engine_0/trace11.yw
+SBY  9:11:25 [pmu_cover] engine_0: ##   0:04:27  Checking cover reachability in step 33..
+SBY  9:11:44 [pmu_cover] engine_0: ##   0:04:46  Checking cover reachability in step 34..
+SBY  9:12:08 [pmu_cover] engine_0: ##   0:05:10  Checking cover reachability in step 35..
+SBY  9:12:37 [pmu_cover] engine_0: ##   0:05:39  Checking cover reachability in step 36..
+SBY  9:13:08 [pmu_cover] engine_0: ##   0:06:10  Reached cover statement in step 36 at pmu_top: u_props.g_d[2].c_deny
+SBY  9:13:08 [pmu_cover] engine_0: ##   0:06:10  Writing trace to VCD file: engine_0/trace12.vcd
+SBY  9:13:09 [pmu_cover] engine_0: ##   0:06:11  Writing trace to Verilog testbench: engine_0/trace12_tb.v
+SBY  9:13:09 [pmu_cover] engine_0: ##   0:06:11  Writing trace to constraints file: engine_0/trace12.smtc
+SBY  9:13:09 [pmu_cover] engine_0: ##   0:06:11  Writing trace to Yosys witness file: engine_0/trace12.yw
+SBY  9:13:09 [pmu_cover] engine_0: ##   0:06:11  Checking cover reachability in step 36..
+SBY  9:13:32 [pmu_cover] engine_0: ##   0:06:34  Checking cover reachability in step 37..
+SBY  9:13:57 [pmu_cover] engine_0: ##   0:06:59  Checking cover reachability in step 38..
+SBY  9:14:27 [pmu_cover] engine_0: ##   0:07:29  Reached cover statement in step 38 at pmu_top: u_props.g_d[0].g_ret.c_ret
+SBY  9:14:27 [pmu_cover] engine_0: ##   0:07:29  Writing trace to VCD file: engine_0/trace13.vcd
+SBY  9:14:28 [pmu_cover] engine_0: ##   0:07:30  Writing trace to Verilog testbench: engine_0/trace13_tb.v
+SBY  9:14:28 [pmu_cover] engine_0: ##   0:07:30  Writing trace to constraints file: engine_0/trace13.smtc
+SBY  9:14:28 [pmu_cover] engine_0: ##   0:07:30  Writing trace to Yosys witness file: engine_0/trace13.yw
+SBY  9:14:28 [pmu_cover] engine_0: ##   0:07:30  Checking cover reachability in step 38..
+SBY  9:14:38 [pmu_cover] engine_0: ##   0:07:40  Checking cover reachability in step 39..
+SBY  9:14:52 [pmu_cover] engine_0: ##   0:07:54  Checking cover reachability in step 40..
+SBY  9:15:08 [pmu_cover] engine_0: ##   0:08:10  Checking cover reachability in step 41..
+SBY  9:15:25 [pmu_cover] engine_0: ##   0:08:27  Reached cover statement in step 41 at pmu_top: u_props.g_d[1].g_ret.c_ret
+SBY  9:15:25 [pmu_cover] engine_0: ##   0:08:27  Writing trace to VCD file: engine_0/trace14.vcd
+SBY  9:15:27 [pmu_cover] engine_0: ##   0:08:29  Writing trace to Verilog testbench: engine_0/trace14_tb.v
+SBY  9:15:27 [pmu_cover] engine_0: ##   0:08:29  Writing trace to constraints file: engine_0/trace14.smtc
+SBY  9:15:27 [pmu_cover] engine_0: ##   0:08:29  Writing trace to Yosys witness file: engine_0/trace14.yw
+SBY  9:15:27 [pmu_cover] engine_0: ##   0:08:29  Checking cover reachability in step 41..
+SBY  9:15:35 [pmu_cover] engine_0: ##   0:08:37  Checking cover reachability in step 42..
+SBY  9:15:45 [pmu_cover] engine_0: ##   0:08:47  Checking cover reachability in step 43..
+SBY  9:15:57 [pmu_cover] engine_0: ##   0:08:59  Checking cover reachability in step 44..
+SBY  9:16:09 [pmu_cover] engine_0: ##   0:09:11  Checking cover reachability in step 45..
+SBY  9:16:20 [pmu_cover] engine_0: ##   0:09:22  Checking cover reachability in step 46..
+SBY  9:16:33 [pmu_cover] engine_0: ##   0:09:36  Checking cover reachability in step 47..
+SBY  9:16:49 [pmu_cover] engine_0: ##   0:09:51  Checking cover reachability in step 48..
+SBY  9:17:08 [pmu_cover] engine_0: ##   0:10:10  Checking cover reachability in step 49..
+SBY  9:17:25 [pmu_cover] engine_0: ##   0:10:27  Checking cover reachability in step 50..
+SBY  9:17:49 [pmu_cover] engine_0: ##   0:10:51  Checking cover reachability in step 51..
+SBY  9:18:09 [pmu_cover] engine_0: ##   0:11:11  Checking cover reachability in step 52..
+SBY  9:20:21 [pmu_cover] engine_0: ##   0:13:23  Checking cover reachability in step 53..
+SBY  9:20:51 [pmu_cover] engine_0: ##   0:13:53  Checking cover reachability in step 54..
+SBY  9:21:24 [pmu_cover] engine_0: ##   0:14:26  Checking cover reachability in step 55..
+SBY  9:22:18 [pmu_cover] engine_0: ##   0:15:20  Checking cover reachability in step 56..
+SBY  9:23:03 [pmu_cover] engine_0: ##   0:16:05  Checking cover reachability in step 57..
+SBY  9:23:57 [pmu_cover] engine_0: ##   0:16:59  Checking cover reachability in step 58..
+SBY  9:24:57 [pmu_cover] engine_0: ##   0:17:59  waiting for solver (1 minute)
+SBY  9:25:09 [pmu_cover] engine_0: ##   0:18:11  Checking cover reachability in step 59..
+SBY  9:26:09 [pmu_cover] engine_0: ##   0:19:11  waiting for solver (1 minute)
+SBY  9:26:19 [pmu_cover] engine_0: ##   0:19:21  Checking cover reachability in step 60..
+SBY  9:27:19 [pmu_cover] engine_0: ##   0:20:21  waiting for solver (1 minute)
+SBY  9:27:59 [pmu_cover] engine_0: ##   0:21:01  Checking cover reachability in step 61..
+SBY  9:28:59 [pmu_cover] engine_0: ##   0:22:01  waiting for solver (1 minute)
+SBY  9:29:34 [pmu_cover] engine_0: ##   0:22:36  Checking cover reachability in step 62..
+SBY  9:30:34 [pmu_cover] engine_0: ##   0:23:36  waiting for solver (1 minute)
+SBY  9:32:00 [pmu_cover] engine_0: ##   0:25:02  Checking cover reachability in step 63..
+SBY  9:33:00 [pmu_cover] engine_0: ##   0:26:02  waiting for solver (1 minute)
+SBY  9:33:41 [pmu_cover] engine_0: ##   0:26:43  Checking cover reachability in step 64..
+SBY  9:34:41 [pmu_cover] engine_0: ##   0:27:43  waiting for solver (1 minute)
+SBY  9:37:19 [pmu_cover] engine_0: ##   0:30:21  Checking cover reachability in step 65..
+SBY  9:38:19 [pmu_cover] engine_0: ##   0:31:21  waiting for solver (1 minute)
+SBY  9:40:11 [pmu_cover] engine_0: ##   0:33:13  Checking cover reachability in step 66..
+SBY  9:41:11 [pmu_cover] engine_0: ##   0:34:13  waiting for solver (1 minute)
+SBY  9:43:49 [pmu_cover] engine_0: ##   0:36:51  Checking cover reachability in step 67..
+SBY  9:44:49 [pmu_cover] engine_0: ##   0:37:51  waiting for solver (1 minute)
+SBY  9:47:04 [pmu_cover] engine_0: ##   0:40:06  Checking cover reachability in step 68..
+SBY  9:48:04 [pmu_cover] engine_0: ##   0:41:06  waiting for solver (1 minute)
+SBY  9:50:48 [pmu_cover] engine_0: ##   0:43:50  Checking cover reachability in step 69..
+SBY  9:51:48 [pmu_cover] engine_0: ##   0:44:50  waiting for solver (1 minute)
+SBY  9:54:39 [pmu_cover] engine_0: ##   0:47:42  Checking cover reachability in step 70..
+SBY  9:55:39 [pmu_cover] engine_0: ##   0:48:42  waiting for solver (1 minute)
+SBY  9:58:30 [pmu_cover] engine_0: ##   0:51:32  Checking cover reachability in step 71..
+SBY  9:59:30 [pmu_cover] engine_0: ##   0:52:32  waiting for solver (1 minute)
+SBY 10:03:30 [pmu_cover] engine_0: ##   0:56:32  waiting for solver (5 minutes)
+SBY 10:08:30 [pmu_cover] engine_0: ##   1:01:32  waiting for solver (10 minutes)
+SBY 10:10:56 [pmu_cover] engine_0: ##   1:03:59  Checking cover reachability in step 72..
+SBY 10:11:56 [pmu_cover] engine_0: ##   1:04:59  waiting for solver (1 minute)
+SBY 10:15:56 [pmu_cover] engine_0: ##   1:08:59  waiting for solver (5 minutes)
+SBY 10:20:47 [pmu_cover] engine_0: ##   1:13:49  Checking cover reachability in step 73..
+SBY 10:21:47 [pmu_cover] engine_0: ##   1:14:49  waiting for solver (1 minute)
+SBY 10:25:47 [pmu_cover] engine_0: ##   1:18:49  waiting for solver (5 minutes)
+SBY 10:30:47 [pmu_cover] engine_0: ##   1:23:49  waiting for solver (10 minutes)
+SBY 10:32:38 [pmu_cover] engine_0: ##   1:25:40  Checking cover reachability in step 74..
+SBY 10:33:38 [pmu_cover] engine_0: ##   1:26:40  waiting for solver (1 minute)
+SBY 10:37:38 [pmu_cover] engine_0: ##   1:30:40  waiting for solver (5 minutes)
+SBY 10:42:38 [pmu_cover] engine_0: ##   1:35:40  waiting for solver (10 minutes)
+SBY 10:47:38 [pmu_cover] engine_0: ##   1:40:40  waiting for solver (15 minutes)
+SBY 10:49:51 [pmu_cover] engine_0: ##   1:42:53  Checking cover reachability in step 75..
+SBY 10:50:51 [pmu_cover] engine_0: ##   1:43:53  waiting for solver (1 minute)
+SBY 10:54:51 [pmu_cover] engine_0: ##   1:47:53  waiting for solver (5 minutes)
+SBY 10:59:51 [pmu_cover] engine_0: ##   1:52:53  waiting for solver (10 minutes)
+SBY 11:03:42 [pmu_cover] engine_0: ##   1:56:44  Checking cover reachability in step 76..
+SBY 11:04:42 [pmu_cover] engine_0: ##   1:57:44  waiting for solver (1 minute)
+SBY 11:08:42 [pmu_cover] engine_0: ##   2:01:44  waiting for solver (5 minutes)
+SBY 11:11:56 [pmu_cover] engine_0: ##   2:04:58  Checking cover reachability in step 77..
+SBY 11:12:56 [pmu_cover] engine_0: ##   2:05:58  waiting for solver (1 minute)
+SBY 11:16:56 [pmu_cover] engine_0: ##   2:09:58  waiting for solver (5 minutes)
+SBY 11:21:56 [pmu_cover] engine_0: ##   2:14:58  waiting for solver (10 minutes)
+SBY 11:26:56 [pmu_cover] engine_0: ##   2:19:58  waiting for solver (15 minutes)
+SBY 11:27:56 [pmu_cover] engine_0: ##   2:20:59  Checking cover reachability in step 78..
+SBY 11:28:56 [pmu_cover] engine_0: ##   2:21:59  waiting for solver (1 minute)
+SBY 11:32:56 [pmu_cover] engine_0: ##   2:25:59  waiting for solver (5 minutes)
+SBY 11:37:56 [pmu_cover] engine_0: ##   2:30:59  waiting for solver (10 minutes)
+SBY 11:38:10 [pmu_cover] engine_0: terminating process

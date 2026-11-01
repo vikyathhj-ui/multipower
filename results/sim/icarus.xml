@@ -1,0 +1,15 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1793520942" />
+    <testcase name="test_reset_and_registers" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="70" time="0.11710238456726074" sim_time_ns="4250.0" ratio_time="36293.02695846389" />
+    <testcase name="test_apb_errors" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="104" time="1.7115163803100586" sim_time_ns="62730.0" ratio_time="36651.7088131145" />
+    <testcase name="test_transition_matrix" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="143" time="0.5427308082580566" sim_time_ns="21480.0" ratio_time="39577.63162357043" />
+    <testcase name="test_deny_every_step" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="172" time="0.5732803344726562" sim_time_ns="20700.0" ratio_time="36107.988980716254" />
+    <testcase name="test_timeout_every_wait" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="212" time="1.0443778038024902" sim_time_ns="39749.999999999985" ratio_time="38060.93911156828" />
+    <testcase name="test_wake_race" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="265" time="3.288588047027588" sim_time_ns="128210.0" ratio_time="38986.33643574891" />
+    <testcase name="test_wake_sources" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="295" time="0.142287015914917" sim_time_ns="5850.0" ratio_time="41114.08171985355" />
+    <testcase name="test_reset_while_on" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="352" time="1.074493408203125" sim_time_ns="41380.0" ratio_time="38511.17157544946" />
+    <testcase name="test_soak" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="379" time="262.8819591999054" sim_time_ns="6521950.0" ratio_time="24809.424046632514" />
+    <testcase name="test_zz_coverage_report" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="422" time="0.0006191730499267578" sim_time_ns="0.0" ratio_time="0.0" />
+  </testsuite>
+</testsuites>

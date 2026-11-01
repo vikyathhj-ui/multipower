@@ -1,0 +1,11 @@
+rtl/pmu_regmap_pkg.sv
+rtl/sync_ff.sv
+rtl/rst_sync.sv
+rtl/cells/icg_wrap.sv
+rtl/cells/iso_wrap.sv
+rtl/qch_master.sv
+rtl/inrush_arb.sv
+rtl/wake_ctrl.sv
+rtl/pd_ctrl.sv
+rtl/apb_regs.sv
+rtl/pmu_top.sv

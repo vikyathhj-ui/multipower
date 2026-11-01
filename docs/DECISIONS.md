@@ -51,3 +51,180 @@ owner confirmed all ten at the Phase 1 gate.
   - `WAKE_MASK` bit = 1 means *masked*; reset is all masked.
   - `WAKE_CTRL` is an addition to the brief's list, needed to start the timer.
   - `PD_STATE` is an addition, for software visibility of each domain.
+
+## D-005 — FSM encoding: binary
+- **Context:** BRIEF Phase 2 asks for one-hot or binary FSMs, with the choice justified.
+- **Choice:** binary-encoded `typedef enum` for `pd_ctrl` (22 states, 5 bits). `qch_master` has a
+  single QREQn register. The arbiter grant is a registered one-hot vector.
+- **Why:**
+  - **Area and power:** 5 flops per domain instead of 22. The PMU is always on, so its leakage
+    counts in every low-power mode.
+  - **Timing:** not critical. The next-state logic is shallow and the PMU clock is slow compared
+    with sky130 gate delays (checked post-route in Phase 4).
+  - **Formal:** property 8 ("legal states") becomes `st <= C_CLK` on 5 bits, which is easy to state
+    and prove. One-hot would need `$onehot(st)`.
+  - **Safety:** the unused codes 22–31 go to FAULT through the `default` branch.
+
+## D-006 — Reset strategy
+- **One reset input,** `PRESETn`, active low. `rst_sync` asserts reset asynchronously, so every flop
+  clears at once even without a clock, and releases it synchronously through two flops, so no flop
+  sees reset removal close to a clock edge.
+- **All PMU flops** use the synchronised `rstn` as an asynchronous active-low reset.
+- **Reset state is the safe state:** every domain OFF, isolated and in reset, with switches off and
+  QREQn low (Q_STOPPED). Controller and device are reset together, which IHI 0068D §2.1.2 allows.
+- **Domain resets** (`rst_n[d]`) are outputs of `pd_ctrl`, asserted and released only by the
+  sequences in SPEC §4.
+
+## D-007 — Synchronisers on every input from another domain
+- **Choice:** QACCEPTn, QDENY, QACTIVE (after isolation), both switch acks and `wake_irq` each pass
+  through `sync_ff` (`SYNC_STAGES` = 2 by default; lint also checks 3).
+- **Why:** IHI 0068D §2.1.1 assumes all Q-Channel signals are asynchronous. Power-switch acks come
+  from analogue switch sensing.
+- **Cost:** `SYNC_STAGES` cycles of latency on every handshake. This is included in the
+  liveness bound (Phase 3).
+- **Why sampling the synchronised values is safe:** QREQn is decided from synchronised values that
+  are up to `SYNC_STAGES` cycles old. The device rules (IHI 0068D §2.1.2) only let the device change
+  QACCEPTn/QDENY in response to a QREQn change, so the true values cannot change while QREQn is
+  steady. Property 6 checks this formally, against the real pins.
+
+## D-008 — sky130 cell wrappers
+- **ICG:** `rtl/cells/icg_wrap.sv` instantiates `sky130_fd_sc_hd__dlclkp_1` when `PMU_SKY130_CELLS`
+  is defined (liberty: `GCLK = CLK & M0`, with the enable latched while CLK is low). Otherwise it uses
+  a behavioural latch-and-AND model.
+- **Isolation:** `rtl/cells/iso_wrap.sv` uses `lpflow_inputiso0p_1` (X = !SLEEP & A) for clamp 0 and
+  `lpflow_inputiso1p_1` (X = A | SLEEP) for clamp 1. The functions were read from the tt liberty.
+- **Where the cells are:** inside `pmu_top`, on the PMU's own inputs from the switchable domains
+  (QACCEPTn, QDENY, QACTIVE; 3 per domain), and on the gated domain clocks.
+- **Evidence:** `scripts/lint.sh` synthesises with the wrappers enabled; the result keeps
+  3 × `dlclkp_1` and 9 × `lpflow_inputiso0p_1` and has no latches (`results/lint_summary.txt`).
+- **Still open:** LibreLane's sky130 config excludes `lpflow_*` from synthesis and PnR. Whether
+  instantiated cells survive the flow is checked in Phase 4 (BRIEF rule 6).
+
+## D-009 — Lint waivers (three, each inline with its reason)
+1. `apb_regs.paddr[1:0]` is unused: registers are word-aligned (SPEC §2.1).
+2. `pmu_top.in_pu_switch` is used only by the formal inrush property (property 5).
+3. `rst_sync`'s SYNCASYNCNET: a reset synchroniser is by design a flop that is reset asynchronously
+   and drives a reset.
+
+The generated `pmu_regmap_pkg.sv` also waives UNUSEDPARAM. It is a constant table, and the RTL uses
+only part of it.
+
+## D-010 — Delay and timeout counting
+- **Holds:** one 17-bit counter per domain counts cycles since the step began. A hold step ends when
+  count + 1 ≥ `DLY_*` (0 is treated as 1).
+- **Waits:** a wait step faults when count + 1 ≥ `TMO_*` while its acknowledge is still missing
+  (0 means 65536).
+- **Steps with a settling hold** (trickle on, main on) also count consecutive acknowledge-high cycles.
+  If the ack drops, that count restarts, but the timeout keeps running from the step's start. This is
+  the window property 4 reasons about.
+- **Configuration changes take effect at once,** because the comparisons use the live register
+  values, even mid-step. Property 4 is stated against the value in force when `psw_main_en` rises.
+
+## D-011 — Bug in the Phase 1 register-map generator (found in Phase 2)
+- **Symptom:** `rtl/pmu_regmap_pkg.sv`, `sw/pmu_regs.h` and `docs/REGMAP.md` named two states
+  `PD_STATE_True` and `PD_STATE_False`.
+- **Cause:** PyYAML follows YAML 1.1, which reads the bare keys `ON` and `OFF` in `regmap.yaml` as
+  booleans.
+- **Fix:** the keys are quoted, and `gen_regmap.py` now fails if any enum key is not a string, so
+  this cannot recur.
+- **Found by:** linting the generated SystemVerilog package, whose warnings listed the odd names. The
+  committed Phase 1 outputs had the bug; they are regenerated in the Phase 2 commit.
+
+## D-012 — Icarus workaround: per-domain targets computed in a loop
+- **Symptom:** Icarus 14.0-dev rejected `pmu_top`'s domain `generate` loop with "A reference to a net
+  or variable (`d`) is not allowed in a constant expression" on every later use of the genvar.
+  Verilator and Yosys accepted the same code.
+- **Isolated** (`sim_build/ivltest/`): the trigger is a function call that takes the genvar as an
+  argument inside a port connection, `.tgt(target(mode_req, d))`. Removing that one call makes
+  the rest of the loop elaborate.
+- **Fix:** the targets are computed in an `always_comb` loop into `tgt[N_PD]`, and the port connects
+  `tgt[d]`. Logic is unchanged; lint and the formal proofs were rerun after the change.
+- **Not kept:** two earlier attempts (local output wires, a renamed genvar) were based on a wrong
+  diagnosis and were reverted.
+
+## D-013 — Formal: per-state bounds written as plain implications
+- The first version of property 9 selected each state's bound through a `unique case` mux inside
+  the bound property module. Its induction trace showed the bound as 4 in a state that maps to
+  0xFFFF. I did not reduce this to a minimal case, so the cause (tool or my code) is **unexplained**.
+- The property was rewritten as one implication per state group, which is also easier to read; it
+  proves. Recorded so the observation is not lost.
+
+---
+
+## Bugs found by formal
+
+Every counterexample is kept in `results/formal_cex/`: the VCD trace, plus a `.txt` table of its key
+signals made by `scripts/cex_table.py`.
+
+### F-001 — Stale power-switch acknowledge through the synchroniser (RTL bug, fixed)
+- **Property:** P1, `!pwr_good → iso_en && !clk_en && !rst_n`. Basecase failure at step 8, domain 0.
+  Trace: `cex01_p1_stale_switch_ack`.
+- **What happened:**
+  1. The switch acks were already high when the PMU came out of reset (the switches were still on,
+     e.g. after a PMU-only reset). Both enables were 0, so the switches turned off and the real acks
+     fell (step 5).
+  2. The boot power-up began at step 6. The *synchronised* acks still showed 1 from before.
+  3. The PMU took that as "trickle on" and "main on", and released the domain's reset at step 8,
+     while the real supply was off.
+- **Root cause:** an acknowledge was trusted as soon as its step began, but for `SYNC_STAGES` cycles
+  the synchroniser can still hold a value sampled *before* the enable changed.
+- **Fix** (`rtl/pd_ctrl.sv`, `settled`): in the four switch steps, an ack is used only once the step
+  has lasted `SYNC_STAGES` cycles. From then on the synchronised value is a pin sample taken after the
+  enable changed, and the switch cannot reverse while its enable is held (assumption SW).
+- **Cost:** `SYNC_STAGES` extra cycles per switch step.
+- **Lesson:** a synchroniser delays information. Any decision on a synchronised handshake must
+  allow for answers that predate the request.
+
+### F-002 — Device assumption did not cover the reset-release cycle (formal environment, fixed)
+- **Property:** P6b, QREQn may rise only from 00 or 11. Basecase failure at step 17.
+  Trace: `cex02_p6b_env_device_rule_gap`.
+- **What happened:** the modelled device raised QACCEPTn in the same cycle it left reset, with QREQn
+  LOW. IHI 0068D §2.1.2 forbids this. My device-rule assumption was enabled only from the cycle
+  *after* reset release, so it allowed it.
+- **Fix** (`formal/pmu_props.sv`): the device rules apply in every cycle the device is out of reset.
+- **Not an RTL bug:** the PMU behaved correctly, because it saw the isolated (clamped 0) value.
+
+### F-003 — Overflow in my own P4 monitor (property bug, fixed)
+- **Symptom:** a P4 induction failure where the trickle ack had been high for the whole trace.
+- **Cause:** the monitor `trk_hi` saturates at 17'h1FFFF, and the assertion added 1 in 17 bits, which
+  wrapped to 0.
+- **Fix:** compare in 18 bits.
+- **Lesson:** check the checker's arithmetic too.
+
+### F-004 — Induction needed invariants (not bugs)
+After F-001–F-003 the base case passed to depth 24, but k-induction failed: it starts from
+*arbitrary* states, including unreachable ones such as "U_MAIN_ON with the trickle enable off". Each
+failure was resolved by stating a true invariant, which is then proven along with the properties.
+- **h1:** powered states have both enables, both acks and every synchroniser stage high.
+- **h1e/f:** the trickle switch is firmly on during the main-switch steps.
+- **h2:** per-state values of `iso_en`, `rst_n` and `clk_en` (the table in MICROARCH).
+- **h3:** Q_STOPPED from the accept onwards.
+- **h4:** the retention pulses belong only to their states, and there are no retention states
+  without `HAS_RET`.
+- **h5:** `stop_req` and `exit_req` belong only to their wait states.
+- **h6:** per-state switch enables.
+- **h7:** inrush request and grant.
+- **h4a/h4b:** the P4 hold counter never exceeds the real ack's high time.
+
+With these, properties 1–8 are **proven unbounded** (k-induction, depth 24, about 12 s).
+
+### F-005 — P7 trusted the design's own write decode (property weakness, found by mutation)
+- **Found by:** the mutant `err_write_takes` (an erroring APB write still updates a register) still
+  passed the proof.
+- **Cause:** P7 defined "valid write" with the design's internal `we`. The mutant changed `we`, so the
+  property agreed with the bug.
+- **Fix:** P7 computes a valid write from the APB pins and the generated register map (access phase,
+  write, the register's own address, legal mode value), independently of the RTL decode.
+- **Lesson:** a property must not reuse the logic it is checking.
+
+### Mutation harness: a first run that proved nothing (fixed)
+- **What happened:** the first `scripts/mutate.py` run reported every mutant "caught". In fact the
+  simulation never started in any mutant copy. The copy filter `pmu_cover*`, meant for SymbiYosys
+  task folders, also skipped `tb/pmu_coverage.py`, and the import error counted as a failure.
+- **Noticed because:** every simulation's first error was the same start-up message at 0 ns.
+- **Fix:**
+  - The copy filter skips only directories inside `formal/`.
+  - An unmodified **control** copy must pass both the suite and the proof first.
+  - A mutant counts as caught only if all tests ran and at least one failed on a check; a crash is
+    reported as ERROR.
+- **Lesson:** a mutation score needs a control run, or it can measure a broken harness.

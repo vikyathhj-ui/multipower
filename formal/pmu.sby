@@ -1,0 +1,39 @@
+# Formal verification of pmu_top (docs/BRIEF.md A3). Run via scripts/run_formal.py or:
+#   sby -f formal/pmu.sby <task>
+[tasks]
+prove
+cover
+live
+
+[options]
+prove: mode prove
+prove: depth 24
+live: mode prove
+live: depth 24
+cover: mode cover
+cover: depth 80
+multiclock off
+
+[engines]
+prove: smtbmc yices
+cover: smtbmc yices
+live: smtbmc yices
+
+[script]
+live: read_slang -DFORMAL -DLIVE --top pmu_top pmu_regmap_pkg.sv sync_ff.sv rst_sync.sv icg_wrap.sv iso_wrap.sv qch_master.sv inrush_arb.sv wake_ctrl.sv pd_ctrl.sv apb_regs.sv pmu_top.sv pmu_props.sv
+~live: read_slang -DFORMAL --top pmu_top pmu_regmap_pkg.sv sync_ff.sv rst_sync.sv icg_wrap.sv iso_wrap.sv qch_master.sv inrush_arb.sv wake_ctrl.sv pd_ctrl.sv apb_regs.sv pmu_top.sv pmu_props.sv
+prep -top pmu_top
+
+[files]
+../rtl/pmu_regmap_pkg.sv
+../rtl/sync_ff.sv
+../rtl/rst_sync.sv
+../rtl/cells/icg_wrap.sv
+../rtl/cells/iso_wrap.sv
+../rtl/qch_master.sv
+../rtl/inrush_arb.sv
+../rtl/wake_ctrl.sv
+../rtl/pd_ctrl.sv
+../rtl/apb_regs.sv
+../rtl/pmu_top.sv
+pmu_props.sv
