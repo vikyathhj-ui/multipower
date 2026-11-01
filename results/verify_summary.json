@@ -12,7 +12,7 @@
     },
     "simulation": {
       "result": "PASS",
-      "tests": 10,
+      "tests": 11,
       "failed": [],
       "per_test": {
         "test_reset_and_registers": {
@@ -68,10 +68,16 @@
           "sequences_checked": 20779,
           "errors": 0,
           "detail": "10000 requests, 3516 end-state checks"
+        },
+        "test_latency": {
+          "status": "PASS",
+          "sequences_checked": 25,
+          "errors": 0,
+          "detail": null
         }
       },
       "soak_requests": 10000,
-      "sequences_checked": 22117,
+      "sequences_checked": 22142,
       "source": "results/sim/icarus.xml"
     },
     "coverage": {

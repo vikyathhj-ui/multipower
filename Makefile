@@ -7,7 +7,8 @@ SHELL := /bin/bash
 PY ?= .venv/bin/python
 
 .PHONY: help env regmap regmap-check wavedrom-check lint legacy-probe docs-check sim sim-ci \
-        formal formal-ci mutation verify verify-summary clean
+        formal formal-ci mutation verify verify-summary \
+        flow breakeven summary clean
 
 help:
 	@echo "make env            tool table -> results/env_check.txt"
@@ -21,6 +22,9 @@ help:
 	@echo "make formal-ci      the k-induction proof of properties 1-8 only (CI)"
 	@echo "make mutation       deliberate bugs must be caught -> results/mutation.json"
 	@echo "make verify         lint + docs-check + sim + formal + mutation + results/verify_summary.json"
+	@echo "make flow           LibreLane on the PMU (AON logic), flow/config.json -> flow/runs/pmu_T20_nodly"
+	@echo "make breakeven      break-even analysis -> results/power/breakeven.json, results/plots/breakeven.png"
+	@echo "make summary        results/summary.json from all results"
 	@echo "make legacy-probe   audit evidence for docs/AUDIT.md -> results/legacy_probe.txt"
 	@echo "make clean          remove sim_build/"
 
@@ -60,6 +64,16 @@ verify-summary:
 	python3 scripts/verify_summary.py
 
 verify: lint docs-check sim formal mutation verify-summary
+
+flow:
+	cd flow && librelane --manual-pdk --pdk-root $$PDK_ROOT --pdk sky130A --scl sky130_fd_sc_hd \
+	    --run-tag pmu_T20_nodly --overwrite config.json
+
+breakeven:
+	python3 analysis/breakeven.py
+
+summary:
+	python3 scripts/parse_flow.py --tag pmu_T20_nodly
 
 legacy-probe:
 	scripts/legacy_probe.sh

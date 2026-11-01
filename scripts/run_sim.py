@@ -37,13 +37,16 @@ def main(argv=None) -> int:
     out.mkdir(parents=True, exist_ok=True)
     xml = out / f"{a.name}.xml"
     runner.test(test_module="test_pmu", hdl_toplevel="tb_top", build_dir=build, test_dir=build,
-                testcase=a.test, extra_env={"PMU_SEED": str(a.seed), "PMU_SOAK": str(a.soak),
-                           "PMU_COV_OUT": str(REPO / "results" / "coverage" / f"{a.name}.json")}, results_xml=xml,
+                test_filter=('|'.join(a.test) if a.test else None), extra_env={"PMU_SEED": str(a.seed), "PMU_SOAK": str(a.soak),
+                           "PMU_COV_OUT": str(REPO / "results" / "coverage" / f"{a.name}.json"),
+                           "PMU_LAT_OUT": str(REPO / "results" / "sim" / f"{a.name}_latency.json")}, results_xml=xml,
                 log_file=build / "sim.log", timescale=("1ns", "1ps"))
     import xml.etree.ElementTree as ET
     cases = list(ET.parse(xml).getroot().iter("testcase"))
     bad = [c.get("name") for c in cases if c.find("failure") is not None or c.find("error") is not None]
-    print(f"{len(cases) - len(bad)}/{len(cases)} tests passed{': FAILED ' + ', '.join(bad) if bad else ''}")
+    ran = [c for c in cases if c.find("skipped") is None]
+    print(f"{len(ran) - len(bad)}/{len(ran)} tests passed ({len(cases) - len(ran)} skipped)"
+          f"{': FAILED ' + ', '.join(bad) if bad else ''}")
     return 1 if bad else 0
 
 

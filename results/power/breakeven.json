@@ -1,0 +1,410 @@
+{
+  "assumptions": {
+    "F_CLK_MHZ": 50.0,
+    "N_CELLS": {
+      "CPU": 20000,
+      "DSP": 30000,
+      "PERI": 10000
+    },
+    "FLOP_FRACTION": 0.15,
+    "CLK_TREE_FACTOR": 2.0,
+    "N_RET_BITS": {
+      "CPU": 1024,
+      "DSP": 512,
+      "PERI": 0
+    },
+    "RET_LATCH_CELL": "sky130_fd_sc_hd__dlxtp_1",
+    "C_PER_CELL_FF": 5.0,
+    "E_RET_PER_BIT_FJ": 20.0,
+    "SWITCH_OFF_LEAK_FRACTION": 0.02,
+    "CLK_GATED_RESIDUAL": 0.0
+  },
+  "modes": {
+    "IDLE": {
+      "CPU": "CG",
+      "DSP": "CG",
+      "PERI": "ON"
+    },
+    "SLEEP": {
+      "CPU": "RET",
+      "DSP": "RET",
+      "PERI": "CG"
+    },
+    "DEEP_SLEEP": {
+      "CPU": "RET",
+      "DSP": "OFF",
+      "PERI": "OFF"
+    },
+    "SHUTDOWN": {
+      "CPU": "OFF",
+      "DSP": "OFF",
+      "PERI": "OFF"
+    }
+  },
+  "corners": {
+    "TT": "tt_025C_1v80",
+    "SS": "ss_100C_1v60",
+    "FF": "ff_100C_1v95"
+  },
+  "inputs": {
+    "representative_netlist": "results/power/rep_cells.json",
+    "latency": "results/sim/icarus_latency.json",
+    "pmu_power_W": 0.0037240111269056797,
+    "pmu_power_source": "results/flow/metrics.json power__total",
+    "pmu_power_label": "OpenSTA, LibreLane default activity (not annotated)"
+  },
+  "corner_data": {
+    "TT": {
+      "avg_cell_leak_nW": 0.0084444493,
+      "flop_clk_pin_pF": 0.001788,
+      "ret_latch_leak_nW": 0.00792823,
+      "domains": {
+        "CPU": {
+          "leak_W": 1.6888898600000003e-07,
+          "clk_W": 0.001737936,
+          "ret_leak_W": 8.11850752e-09,
+          "state_power_W": {
+            "ON": 0.0017381048889860001,
+            "CG": 1.6888898600000003e-07,
+            "RET": 1.149628724e-08,
+            "OFF": 3.3777797200000007e-09
+          },
+          "E_switch_J": 3.24e-10,
+          "E_ret_J": 2.0480000000000003e-11
+        },
+        "DSP": {
+          "leak_W": 2.53333479e-07,
+          "clk_W": 0.002606904,
+          "ret_leak_W": 4.05925376e-09,
+          "state_power_W": {
+            "ON": 0.002607157333479,
+            "CG": 2.53333479e-07,
+            "RET": 9.125923340000001e-09,
+            "OFF": 5.066669580000001e-09
+          },
+          "E_switch_J": 4.86e-10,
+          "E_ret_J": 1.0240000000000002e-11
+        },
+        "PERI": {
+          "leak_W": 8.444449300000001e-08,
+          "clk_W": 0.000868968,
+          "ret_leak_W": 0.0,
+          "state_power_W": {
+            "ON": 0.0008690524444930001,
+            "CG": 8.444449300000001e-08,
+            "RET": 1.6888898600000004e-09,
+            "OFF": 1.6888898600000004e-09
+          },
+          "E_switch_J": 1.62e-10,
+          "E_ret_J": 0.0
+        }
+      }
+    },
+    "SS": {
+      "avg_cell_leak_nW": 12.9530635375,
+      "flop_clk_pin_pF": 0.001693,
+      "ret_latch_leak_nW": 12.66304,
+      "domains": {
+        "CPU": {
+          "leak_W": 0.00025906127075,
+          "clk_W": 0.0013002240000000002,
+          "ret_leak_W": 1.2966952960000002e-05,
+          "state_power_W": {
+            "ON": 0.0015592852707500002,
+            "CG": 0.00025906127075,
+            "RET": 1.8148178375000002e-05,
+            "OFF": 5.181225415e-06
+          },
+          "E_switch_J": 2.5600000000000005e-10,
+          "E_ret_J": 2.0480000000000003e-11
+        },
+        "DSP": {
+          "leak_W": 0.000388591906125,
+          "clk_W": 0.0019503360000000002,
+          "ret_leak_W": 6.483476480000001e-06,
+          "state_power_W": {
+            "ON": 0.0023389279061250003,
+            "CG": 0.000388591906125,
+            "RET": 1.4255314602500001e-05,
+            "OFF": 7.7718381225e-06
+          },
+          "E_switch_J": 3.84e-10,
+          "E_ret_J": 1.0240000000000002e-11
+        },
+        "PERI": {
+          "leak_W": 0.000129530635375,
+          "clk_W": 0.0006501120000000001,
+          "ret_leak_W": 0.0,
+          "state_power_W": {
+            "ON": 0.0007796426353750001,
+            "CG": 0.000129530635375,
+            "RET": 2.5906127075e-06,
+            "OFF": 2.5906127075e-06
+          },
+          "E_switch_J": 1.2800000000000002e-10,
+          "E_ret_J": 0.0
+        }
+      }
+    },
+    "FF": {
+      "avg_cell_leak_nW": 24.546326999999998,
+      "flop_clk_pin_pF": 0.001953,
+      "ret_latch_leak_nW": 24.15069,
+      "domains": {
+        "CPU": {
+          "leak_W": 0.00049092654,
+          "clk_W": 0.00222788475,
+          "ret_leak_W": 2.4730306560000003e-05,
+          "state_power_W": {
+            "ON": 0.00271881129,
+            "CG": 0.00049092654,
+            "RET": 3.4548837360000005e-05,
+            "OFF": 9.818530800000001e-06
+          },
+          "E_switch_J": 3.8025e-10,
+          "E_ret_J": 2.0480000000000003e-11
+        },
+        "DSP": {
+          "leak_W": 0.00073638981,
+          "clk_W": 0.0033418271250000003,
+          "ret_leak_W": 1.2365153280000001e-05,
+          "state_power_W": {
+            "ON": 0.004078216935,
+            "CG": 0.00073638981,
+            "RET": 2.709294948e-05,
+            "OFF": 1.4727796199999999e-05
+          },
+          "E_switch_J": 5.703749999999999e-10,
+          "E_ret_J": 1.0240000000000002e-11
+        },
+        "PERI": {
+          "leak_W": 0.00024546327,
+          "clk_W": 0.001113942375,
+          "ret_leak_W": 0.0,
+          "state_power_W": {
+            "ON": 0.001359405645,
+            "CG": 0.00024546327,
+            "RET": 4.9092654000000004e-06,
+            "OFF": 4.9092654000000004e-06
+          },
+          "E_switch_J": 1.90125e-10,
+          "E_ret_J": 0.0
+        }
+      }
+    }
+  },
+  "results": {
+    "TT": {
+      "P_run_idle_W": 0.005214314666958,
+      "modes": {
+        "IDLE": {
+          "P_mode_W": 0.0008694746669580001,
+          "saving_W": 0.00434484,
+          "E_overhead_J": 1.9364857859909536e-09,
+          "E_switch_J": 0,
+          "E_retention_J": 0,
+          "E_pmu_J": 1.9364857859909536e-09,
+          "transition_cycles": 26,
+          "exit_latency_s": 2.6e-07,
+          "breakeven_s": 4.4569783605171963e-07
+        },
+        "SLEEP": {
+          "P_mode_W": 1.0506670358000002e-07,
+          "saving_W": 0.00521420960025442,
+          "E_overhead_J": 8.5121829214257e-09,
+          "E_switch_J": 8.1e-10,
+          "E_retention_J": 3.0720000000000005e-11,
+          "E_pmu_J": 7.6714629214257e-09,
+          "transition_cycles": 103,
+          "exit_latency_s": 1.4e-06,
+          "breakeven_s": 1.6324972668935976e-06,
+          "breakeven_vs_IDLE_s": 7.563753245467031e-06
+        },
+        "DEEP_SLEEP": {
+          "P_mode_W": 1.8251846680000003e-08,
+          "saving_W": 0.0052142964151113205,
+          "E_overhead_J": 1.0451468262340426e-08,
+          "E_switch_J": 9.72e-10,
+          "E_retention_J": 2.0480000000000003e-11,
+          "E_pmu_J": 9.458988262340427e-09,
+          "transition_cycles": 127,
+          "exit_latency_s": 1.88e-06,
+          "breakeven_s": 2.0043870601700913e-06,
+          "breakeven_vs_IDLE_s": 9.79345523059861e-06
+        },
+        "SHUTDOWN": {
+          "P_mode_W": 1.0133339160000002e-08,
+          "saving_W": 0.00521430453361884,
+          "E_overhead_J": 1.02820278172642e-08,
+          "E_switch_J": 9.72e-10,
+          "E_retention_J": 0,
+          "E_pmu_J": 9.3100278172642e-09,
+          "transition_cycles": 125,
+          "exit_latency_s": 1.88e-06,
+          "breakeven_s": 1.9718886288615464e-06,
+          "breakeven_vs_IDLE_s": 9.598484709362286e-06
+        }
+      }
+    },
+    "SS": {
+      "P_run_idle_W": 0.004677855812250001,
+      "modes": {
+        "IDLE": {
+          "P_mode_W": 0.0014272958122500002,
+          "saving_W": 0.0032505600000000004,
+          "E_overhead_J": 1.9364857859909536e-09,
+          "E_switch_J": 0,
+          "E_retention_J": 0,
+          "E_pmu_J": 1.9364857859909536e-09,
+          "transition_cycles": 26,
+          "exit_latency_s": 2.6e-07,
+          "breakeven_s": 5.957391298702234e-07
+        },
+        "SLEEP": {
+          "P_mode_W": 0.00016193412835249999,
+          "saving_W": 0.0045159216838975,
+          "E_overhead_J": 8.3421829214257e-09,
+          "E_switch_J": 6.400000000000001e-10,
+          "E_retention_J": 3.0720000000000005e-11,
+          "E_pmu_J": 7.6714629214257e-09,
+          "transition_cycles": 103,
+          "exit_latency_s": 1.4e-06,
+          "breakeven_s": 1.8472824608919958e-06,
+          "breakeven_vs_IDLE_s": 5.062344795919738e-06
+        },
+        "DEEP_SLEEP": {
+          "P_mode_W": 2.8510629205000002e-05,
+          "saving_W": 0.004649345183045,
+          "E_overhead_J": 1.0247468262340427e-08,
+          "E_switch_J": 7.68e-10,
+          "E_retention_J": 2.0480000000000003e-11,
+          "E_pmu_J": 9.458988262340427e-09,
+          "transition_cycles": 127,
+          "exit_latency_s": 1.88e-06,
+          "breakeven_s": 2.2040669941458384e-06,
+          "breakeven_vs_IDLE_s": 5.941571713147109e-06
+        },
+        "SHUTDOWN": {
+          "P_mode_W": 1.5543676245e-05,
+          "saving_W": 0.004662312136005001,
+          "E_overhead_J": 1.00780278172642e-08,
+          "E_switch_J": 7.68e-10,
+          "E_retention_J": 0,
+          "E_pmu_J": 9.3100278172642e-09,
+          "transition_cycles": 125,
+          "exit_latency_s": 1.88e-06,
+          "breakeven_s": 2.1615944027934107e-06,
+          "breakeven_vs_IDLE_s": 5.766976952705253e-06
+        }
+      }
+    },
+    "FF": {
+      "P_run_idle_W": 0.00815643387,
+      "modes": {
+        "IDLE": {
+          "P_mode_W": 0.002586721995,
+          "saving_W": 0.005569711875,
+          "E_overhead_J": 1.9364857859909536e-09,
+          "E_switch_J": 0,
+          "E_retention_J": 0,
+          "E_pmu_J": 1.9364857859909536e-09,
+          "transition_cycles": 26,
+          "exit_latency_s": 2.6e-07,
+          "breakeven_s": 3.4768150120708954e-07
+        },
+        "SLEEP": {
+          "P_mode_W": 0.00030710505684000005,
+          "saving_W": 0.00784932881316,
+          "E_overhead_J": 8.6528079214257e-09,
+          "E_switch_J": 9.50625e-10,
+          "E_retention_J": 3.0720000000000005e-11,
+          "E_pmu_J": 7.6714629214257e-09,
+          "transition_cycles": 103,
+          "exit_latency_s": 1.4e-06,
+          "breakeven_s": 1.1023627787026332e-06,
+          "breakeven_vs_IDLE_s": 2.946250320834976e-06
+        },
+        "DEEP_SLEEP": {
+          "P_mode_W": 5.4185898960000004e-05,
+          "saving_W": 0.00810224797104,
+          "E_overhead_J": 1.0620218262340427e-08,
+          "E_switch_J": 1.1407499999999998e-09,
+          "E_retention_J": 2.0480000000000003e-11,
+          "E_pmu_J": 9.458988262340427e-09,
+          "transition_cycles": 127,
+          "exit_latency_s": 1.88e-06,
+          "breakeven_s": 1.31077428144639e-06,
+          "breakeven_vs_IDLE_s": 3.42886819655909e-06
+        },
+        "SHUTDOWN": {
+          "P_mode_W": 2.94555924e-05,
+          "saving_W": 0.0081269782776,
+          "E_overhead_J": 1.04507778172642e-08,
+          "E_switch_J": 1.1407499999999998e-09,
+          "E_retention_J": 0,
+          "E_pmu_J": 9.3100278172642e-09,
+          "transition_cycles": 125,
+          "exit_latency_s": 1.88e-06,
+          "breakeven_s": 1.285936477284451e-06,
+          "breakeven_vs_IDLE_s": 3.329450550250328e-06
+        }
+      }
+    }
+  },
+  "policy": {
+    "TT": [
+      {
+        "from_s": 1e-07,
+        "mode": "RUN (stay)"
+      },
+      {
+        "from_s": 4.466835921509635e-07,
+        "mode": "IDLE"
+      },
+      {
+        "from_s": 7.943282347242822e-06,
+        "mode": "SLEEP"
+      },
+      {
+        "from_s": 0.0199526231496888,
+        "mode": "SHUTDOWN"
+      }
+    ],
+    "SS": [
+      {
+        "from_s": 1e-07,
+        "mode": "RUN (stay)"
+      },
+      {
+        "from_s": 6.30957344480193e-07,
+        "mode": "IDLE"
+      },
+      {
+        "from_s": 5.623413251903491e-06,
+        "mode": "SLEEP"
+      },
+      {
+        "from_s": 1.2589254117941661e-05,
+        "mode": "SHUTDOWN"
+      }
+    ],
+    "FF": [
+      {
+        "from_s": 1e-07,
+        "mode": "RUN (stay)"
+      },
+      {
+        "from_s": 3.548133892335753e-07,
+        "mode": "IDLE"
+      },
+      {
+        "from_s": 3.162277660168379e-06,
+        "mode": "SLEEP"
+      },
+      {
+        "from_s": 7.079457843841373e-06,
+        "mode": "SHUTDOWN"
+      }
+    ]
+  }
+}
