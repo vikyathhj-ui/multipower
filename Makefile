@@ -6,7 +6,8 @@ SHELL := /bin/bash
 .SHELLFLAGS := -o pipefail -c
 PY ?= .venv/bin/python
 
-.PHONY: help env regmap regmap-check wavedrom-check lint legacy-probe docs-check clean
+.PHONY: help env regmap regmap-check wavedrom-check lint legacy-probe docs-check sim sim-ci \
+        formal formal-ci mutation verify verify-summary clean
 
 help:
 	@echo "make env            tool table -> results/env_check.txt"
@@ -14,6 +15,12 @@ help:
 	@echo "make regmap-check   fail if any generated register-map file is stale"
 	@echo "make wavedrom-check check the timing diagrams in docs/"
 	@echo "make lint           verilator -Wall (4 configs) + yosys synth, no latches -> results/lint_summary.txt"
+	@echo "make sim            cocotb suite, 10^4-request soak -> results/sim/, results/coverage/"
+	@echo "make sim-ci         same with a 300-request soak (CI)"
+	@echo "make formal         all SymbiYosys tasks (prove, live, cover) -> results/formal/summary.json"
+	@echo "make formal-ci      the k-induction proof of properties 1-8 only (CI)"
+	@echo "make mutation       deliberate bugs must be caught -> results/mutation.json"
+	@echo "make verify         lint + docs-check + sim + formal + mutation + results/verify_summary.json"
 	@echo "make legacy-probe   audit evidence for docs/AUDIT.md -> results/legacy_probe.txt"
 	@echo "make clean          remove sim_build/"
 
@@ -33,6 +40,26 @@ docs-check: regmap-check wavedrom-check
 
 lint: regmap-check
 	scripts/lint.sh
+
+sim:
+	$(PY) scripts/run_sim.py --soak 10000 --name icarus
+
+sim-ci:
+	$(PY) scripts/run_sim.py --soak 300 --name ci
+
+formal:
+	python3 scripts/run_formal.py
+
+formal-ci:
+	cd formal && sby -f pmu.sby prove
+
+mutation:
+	$(PY) scripts/mutate.py --soak 100
+
+verify-summary:
+	python3 scripts/verify_summary.py
+
+verify: lint docs-check sim formal mutation verify-summary
 
 legacy-probe:
 	scripts/legacy_probe.sh

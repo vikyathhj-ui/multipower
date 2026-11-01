@@ -1,0 +1,92 @@
+SBY  9:06:26 [pmu_prove] Removing directory '/foss/projects/multipower/formal/pmu_prove'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/pmu_regmap_pkg.sv' to '/foss/projects/multipower/formal/pmu_prove/src/pmu_regmap_pkg.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/sync_ff.sv' to '/foss/projects/multipower/formal/pmu_prove/src/sync_ff.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/rst_sync.sv' to '/foss/projects/multipower/formal/pmu_prove/src/rst_sync.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/cells/icg_wrap.sv' to '/foss/projects/multipower/formal/pmu_prove/src/icg_wrap.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/cells/iso_wrap.sv' to '/foss/projects/multipower/formal/pmu_prove/src/iso_wrap.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/qch_master.sv' to '/foss/projects/multipower/formal/pmu_prove/src/qch_master.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/inrush_arb.sv' to '/foss/projects/multipower/formal/pmu_prove/src/inrush_arb.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/wake_ctrl.sv' to '/foss/projects/multipower/formal/pmu_prove/src/wake_ctrl.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/pd_ctrl.sv' to '/foss/projects/multipower/formal/pmu_prove/src/pd_ctrl.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/apb_regs.sv' to '/foss/projects/multipower/formal/pmu_prove/src/apb_regs.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/../rtl/pmu_top.sv' to '/foss/projects/multipower/formal/pmu_prove/src/pmu_top.sv'.
+SBY  9:06:26 [pmu_prove] Copy '/foss/projects/multipower/formal/pmu_props.sv' to '/foss/projects/multipower/formal/pmu_prove/src/pmu_props.sv'.
+SBY  9:06:26 [pmu_prove] engine_0: smtbmc yices
+SBY  9:06:26 [pmu_prove] base: starting process "cd pmu_prove/src; yosys -ql ../model/design.log ../model/design.ys"
+SBY  9:06:26 [pmu_prove] base: finished (returncode=0)
+SBY  9:06:27 [pmu_prove] prep: starting process "cd pmu_prove/model; yosys -ql design_prep.log design_prep.ys"
+SBY  9:06:27 [pmu_prove] prep: finished (returncode=0)
+SBY  9:06:27 [pmu_prove] smt2: starting process "cd pmu_prove/model; yosys -ql design_smt2.log design_smt2.ys"
+SBY  9:06:27 [pmu_prove] smt2: finished (returncode=0)
+SBY  9:06:27 [pmu_prove] engine_0.basecase: starting process "cd pmu_prove; yosys-smtbmc -s yices --presat --unroll --noprogress -t 24  --append 0 --dump-vcd engine_0/trace.vcd --dump-yw engine_0/trace.yw --dump-vlogtb engine_0/trace_tb.v --dump-smtc engine_0/trace.smtc model/design_smt2.smt2"
+SBY  9:06:27 [pmu_prove] engine_0.induction: starting process "cd pmu_prove; yosys-smtbmc -s yices --presat --unroll -i --noprogress -t 24  --append 0 --dump-vcd engine_0/trace_induct.vcd --dump-yw engine_0/trace_induct.yw --dump-vlogtb engine_0/trace_induct_tb.v --dump-smtc engine_0/trace_induct.smtc model/design_smt2.smt2"
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Solver: yices
+SBY  9:06:27 [pmu_prove] engine_0.induction: ##   0:00:00  Solver: yices
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 0..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 0..
+SBY  9:06:27 [pmu_prove] engine_0.induction: ##   0:00:00  Trying induction in step 24..
+SBY  9:06:27 [pmu_prove] engine_0.induction: ##   0:00:00  Trying induction in step 23..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 1..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 1..
+SBY  9:06:27 [pmu_prove] engine_0.induction: ##   0:00:00  Trying induction in step 22..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 2..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 2..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 3..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 3..
+SBY  9:06:27 [pmu_prove] engine_0.induction: ##   0:00:00  Trying induction in step 21..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 4..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 4..
+SBY  9:06:27 [pmu_prove] engine_0.induction: ##   0:00:00  Trying induction in step 20..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 5..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 5..
+SBY  9:06:27 [pmu_prove] engine_0.induction: ##   0:00:00  Trying induction in step 19..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 6..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 6..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 7..
+SBY  9:06:27 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 7..
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 8..
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 8..
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assumptions in step 9..
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:00  Checking assertions in step 9..
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:01  Checking assumptions in step 10..
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:01  Checking assertions in step 10..
+SBY  9:06:28 [pmu_prove] engine_0.induction: ##   0:00:01  Temporal induction successful.
+SBY  9:06:28 [pmu_prove] engine_0.induction: ##   0:00:01  Status: passed
+SBY  9:06:28 [pmu_prove] engine_0.induction: finished (returncode=0)
+SBY  9:06:28 [pmu_prove] engine_0.induction: Status returned by engine for induction: pass
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:01  Checking assumptions in step 11..
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:01  Checking assertions in step 11..
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:01  Checking assumptions in step 12..
+SBY  9:06:28 [pmu_prove] engine_0.basecase: ##   0:00:01  Checking assertions in step 12..
+SBY  9:06:29 [pmu_prove] engine_0.basecase: ##   0:00:01  Checking assumptions in step 13..
+SBY  9:06:29 [pmu_prove] engine_0.basecase: ##   0:00:01  Checking assertions in step 13..
+SBY  9:06:29 [pmu_prove] engine_0.basecase: ##   0:00:02  Checking assumptions in step 14..
+SBY  9:06:29 [pmu_prove] engine_0.basecase: ##   0:00:02  Checking assertions in step 14..
+SBY  9:06:30 [pmu_prove] engine_0.basecase: ##   0:00:02  Checking assumptions in step 15..
+SBY  9:06:30 [pmu_prove] engine_0.basecase: ##   0:00:02  Checking assertions in step 15..
+SBY  9:06:31 [pmu_prove] engine_0.basecase: ##   0:00:03  Checking assumptions in step 16..
+SBY  9:06:31 [pmu_prove] engine_0.basecase: ##   0:00:03  Checking assertions in step 16..
+SBY  9:06:32 [pmu_prove] engine_0.basecase: ##   0:00:04  Checking assumptions in step 17..
+SBY  9:06:32 [pmu_prove] engine_0.basecase: ##   0:00:04  Checking assertions in step 17..
+SBY  9:06:32 [pmu_prove] engine_0.basecase: ##   0:00:05  Checking assumptions in step 18..
+SBY  9:06:33 [pmu_prove] engine_0.basecase: ##   0:00:05  Checking assertions in step 18..
+SBY  9:06:34 [pmu_prove] engine_0.basecase: ##   0:00:07  Checking assumptions in step 19..
+SBY  9:06:34 [pmu_prove] engine_0.basecase: ##   0:00:07  Checking assertions in step 19..
+SBY  9:06:36 [pmu_prove] engine_0.basecase: ##   0:00:09  Checking assumptions in step 20..
+SBY  9:06:36 [pmu_prove] engine_0.basecase: ##   0:00:09  Checking assertions in step 20..
+SBY  9:06:38 [pmu_prove] engine_0.basecase: ##   0:00:10  Checking assumptions in step 21..
+SBY  9:06:38 [pmu_prove] engine_0.basecase: ##   0:00:10  Checking assertions in step 21..
+SBY  9:06:39 [pmu_prove] engine_0.basecase: ##   0:00:12  Checking assumptions in step 22..
+SBY  9:06:39 [pmu_prove] engine_0.basecase: ##   0:00:12  Checking assertions in step 22..
+SBY  9:06:41 [pmu_prove] engine_0.basecase: ##   0:00:13  Checking assumptions in step 23..
+SBY  9:06:41 [pmu_prove] engine_0.basecase: ##   0:00:14  Checking assertions in step 23..
+SBY  9:06:43 [pmu_prove] engine_0.basecase: ##   0:00:15  Status: passed
+SBY  9:06:43 [pmu_prove] engine_0.basecase: finished (returncode=0)
+SBY  9:06:43 [pmu_prove] engine_0.basecase: Status returned by engine for basecase: pass
+SBY  9:06:43 [pmu_prove] summary: Elapsed clock time [H:MM:SS (secs)]: 0:00:16 (16)
+SBY  9:06:43 [pmu_prove] summary: Elapsed process time [H:MM:SS (secs)]: 0:00:18 (18)
+SBY  9:06:43 [pmu_prove] summary: engine_0 (smtbmc yices) returned pass for basecase
+SBY  9:06:43 [pmu_prove] summary: engine_0 (smtbmc yices) returned pass for induction
+SBY  9:06:43 [pmu_prove] summary: engine_0 did not produce any traces
+SBY  9:06:43 [pmu_prove] summary: successful proof by k-induction.
+SBY  9:06:43 [pmu_prove] DONE (PASS, rc=0)

@@ -1,0 +1,62 @@
+# CI for soc-pmu-sequencer (docs/BRIEF.md Phase 3): generated-file checks, lint, a reduced cocotb
+# run and the formal proof of properties 1-8. The full 10^4-request soak, the liveness and cover
+# tasks, the mutation check and the LibreLane flow run locally with `make verify` in the iic-osic
+# container; their results are committed in results/.
+#
+# Tools: YosysHQ OSS CAD Suite (Yosys + yosys-slang, SymbiYosys, yices, Verilator, Icarus), pinned
+# to a dated release. Versions differ from the iic-osic image used locally. No sky130 PDK here, so
+# the Yosys synthesis-with-sky130-cells step of the lint is skipped with a message.
+name: ci
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262  # v4
+
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065  # v5
+        with:
+          python-version: "3.12"
+
+      - uses: YosysHQ/setup-oss-cad-suite@c7845bc0d335c8076aa22047e85972caa8a916df  # v4
+        with:
+          version: "2026-10-14"
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Python packages
+        run: python -m pip install cocotb==2.0.1 cocotb-coverage==2.0 pyyaml
+
+      - name: Tool versions
+        run: |
+          python --version
+          verilator --version
+          iverilog -V 2>&1 | head -n1
+          yosys -V
+          sby --version
+
+      - name: Generated register map and timing diagrams are current
+        run: make PY=python docs-check
+
+      - name: Lint (verilator -Wall, 4 configurations)
+        run: make PY=python lint
+
+      - name: Simulation (cocotb, 300-request soak)
+        run: make PY=python sim-ci
+
+      - name: Formal (properties 1-8, k-induction)
+        run: make PY=python formal-ci
+
+      - name: Upload results
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02  # v4
+        with:
+          name: ci-results
+          path: results/

@@ -130,6 +130,25 @@ only part of it.
 - **Found by:** linting the generated SystemVerilog package, whose warnings listed the odd names. The
   committed Phase 1 outputs had the bug; they are regenerated in the Phase 2 commit.
 
+## D-012 — Icarus workaround: per-domain targets computed in a loop
+- **Symptom:** Icarus 14.0-dev rejected `pmu_top`'s domain `generate` loop with "A reference to a net
+  or variable (`d`) is not allowed in a constant expression" on every later use of the genvar.
+  Verilator and Yosys accepted the same code.
+- **Isolated** (`sim_build/ivltest/`): the trigger is a function call that takes the genvar as an
+  argument inside a port connection, `.tgt(target(mode_req, d))`. Removing that one call makes
+  the rest of the loop elaborate.
+- **Fix:** the targets are computed in an `always_comb` loop into `tgt[N_PD]`, and the port connects
+  `tgt[d]`. Logic is unchanged; lint and the formal proofs were rerun after the change.
+- **Not kept:** two earlier attempts (local output wires, a renamed genvar) were based on a wrong
+  diagnosis and were reverted.
+
+## D-013 — Formal: per-state bounds written as plain implications
+- The first version of property 9 selected each state's bound through a `unique case` mux inside
+  the bound property module. Its induction trace showed the bound as 4 in a state that maps to
+  0xFFFF. I did not reduce this to a minimal case, so the cause (tool or my code) is **unexplained**.
+- The property was rewritten as one implication per state group, which is also easier to read; it
+  proves. Recorded so the observation is not lost.
+
 ---
 
 ## Bugs found by formal
@@ -188,3 +207,24 @@ failure was resolved by stating a true invariant, which is then proven along wit
 - **h4a/h4b:** the P4 hold counter never exceeds the real ack's high time.
 
 With these, properties 1–8 are **proven unbounded** (k-induction, depth 24, about 12 s).
+
+### F-005 — P7 trusted the design's own write decode (property weakness, found by mutation)
+- **Found by:** the mutant `err_write_takes` (an erroring APB write still updates a register) still
+  passed the proof.
+- **Cause:** P7 defined "valid write" with the design's internal `we`. The mutant changed `we`, so the
+  property agreed with the bug.
+- **Fix:** P7 computes a valid write from the APB pins and the generated register map (access phase,
+  write, the register's own address, legal mode value), independently of the RTL decode.
+- **Lesson:** a property must not reuse the logic it is checking.
+
+### Mutation harness: a first run that proved nothing (fixed)
+- **What happened:** the first `scripts/mutate.py` run reported every mutant "caught". In fact the
+  simulation never started in any mutant copy. The copy filter `pmu_cover*`, meant for SymbiYosys
+  task folders, also skipped `tb/pmu_coverage.py`, and the import error counted as a failure.
+- **Noticed because:** every simulation's first error was the same start-up message at 0 ns.
+- **Fix:**
+  - The copy filter skips only directories inside `formal/`.
+  - An unmodified **control** copy must pass both the suite and the proof first.
+  - A mutant counts as caught only if all tests ran and at least one failed on a check; a crash is
+    reported as ERROR.
+- **Lesson:** a mutation score needs a control run, or it can measure a broken harness.

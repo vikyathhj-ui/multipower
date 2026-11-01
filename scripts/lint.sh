@@ -8,7 +8,7 @@ cd "$(dirname "$0")/.."
 mkdir -p sim_build
 FILES=$(tr "\n" " " < scripts/rtl_files.txt)
 OUT=results/lint_summary.txt
-LIB="$PDK_ROOT/$PDK/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib"
+LIB="${PDK_ROOT:-/nonexistent}/${PDK:-sky130A}/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib"
 fail=0
 {
 echo "# Lint summary ($(verilator --version | head -n1))"
@@ -20,7 +20,9 @@ for cfg in "-GN_PD=3 -GHAS_RET=3'b011" "-GN_PD=2 -GHAS_RET=2'b01" "-GN_PD=4 -GHA
         echo "FAIL  verilator -Wall $cfg"; echo "$log" | grep -E '^%' | sed 's/^/      /'; fail=1
     fi
 done
-if log=$(yosys -q -m slang -p "read_liberty -lib $LIB; read_slang -D PMU_SKY130_CELLS $FILES --top pmu_top;
+if [ ! -f "$LIB" ]; then
+    echo "SKIP  yosys synth (no sky130 liberty here: PDK_ROOT=${PDK_ROOT:-unset}; runs in the iic-osic container)"
+elif log=$(yosys -q -m slang -p "read_liberty -lib $LIB; read_slang -D PMU_SKY130_CELLS $FILES --top pmu_top;
          synth -top pmu_top -flatten; select -assert-none t:\$dlatch t:\$_DLATCH_*;
          tee -q -o sim_build/lint_synth_stat.txt stat" 2>&1); then
     echo "PASS  yosys synth (PMU_SKY130_CELLS), no latches"

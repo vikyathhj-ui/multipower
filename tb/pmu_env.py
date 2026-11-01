@@ -168,6 +168,17 @@ class Env:
         d.PRESETn.value = 1
         cocotb.start_soon(self._run())
 
+    async def pmu_reset(self, cycles: int = 3):
+        """Assert PRESETn mid-run; the switch and device models keep their state (the switches may
+        still be on), as after a PMU-only reset."""
+        self.dut.PRESETn.value = 0
+        for _ in range(cycles):
+            await RisingEdge(self.dut.PCLK)
+        self.dut.PRESETn.value = 1
+        self.events = [[] for _ in range(N_PD)]
+        self.last_stable = [ST["OFF"]] * N_PD
+        self.after_fault = [False] * N_PD
+
     async def _run(self):
         d = self.dut
         prev = None
@@ -196,6 +207,7 @@ class Env:
         s["regs_iso"] = [bits(d.dom_regs_iso, RB * i, RB) for i in range(N_PD)]
         s["rdy_iso"] = [bit(d.dom_rdy_n_iso, i) for i in range(N_PD)]
         s["shadow"] = [bits(d.dom_shadow, N_RET * W * i, N_RET * W) for i in range(N_PD)]
+        s["rstn"] = 1 if str(d.u_pmu.rstn.value) == "1" else 0          # PMU internal reset
         return s
 
     def _check_apb(self):
@@ -209,6 +221,14 @@ class Env:
     # ----------------------------------------------------------------- per-cycle checks
     def _check_cycle(self, s, p):
         in_pu = 0
+        if p is not None and not (p["rstn"] and s["rstn"]):
+            # PMU reset: controller and device are reset together (IHI 0068D 2.1.2), every output
+            # goes to the safe state at once. Sequence and handshake checks restart after it;
+            # the isolation and X checks below stay active.
+            self.events = [[] for _ in range(N_PD)]
+            self.last_stable = [ST["OFF"]] * N_PD
+            self.after_fault = [False] * N_PD
+            p = None
         for dd in range(N_PD):
             # power-aware checks
             iso, regs, rdy = s["iso_en"][dd], s["regs_iso"][dd], s["rdy_iso"][dd]
@@ -219,6 +239,13 @@ class Env:
                 if set(regs) - {"0", "1"} or rdy not in (0, 1):
                     self.err(f"PD{dd}: X/Z reaches AON with isolation released (bus={regs})")
             # safety properties at simulation level (formal proves them; this checks the env too)
+            # physical safety (property 1 against the real switch acks, stricter than the formal
+            # version on the synchronised acks): a domain that is unisolated, out of reset or
+            # clocked must really be powered
+            if (iso == 0 or s["rst_n"][dd] == 1 or s["clk_en"][dd] == 1) and \
+                    not (s["psw_trickle_ack"][dd] == 1 and s["psw_main_ack"][dd] == 1):
+                self.err(f"PD{dd}: unisolated/out of reset/clocked while the switches are off "
+                         f"(iso={iso}, rst_n={s['rst_n'][dd]}, clk_en={s['clk_en'][dd]})")
             if s["ret_save"][dd] == 1 and not (iso == 1 and s["clk_en"][dd] == 0):
                 self.err(f"PD{dd}: ret_save while not isolated or clock running (property 3)")
             if s["st"][dd] in (14, 15):
@@ -246,7 +273,7 @@ class Env:
                 for name in ("QREQn", "clk_en", "iso_en", "ret_save", "ret_restore", "rst_n",
                              "psw_trickle_en", "psw_main_en"):
                     if p[name][dd] != s[name][dd]:
-                        self.events[dd].append((name, s[name][dd]))
+                        self.events[dd].append((name, s[name][dd], self.cycle))
                 if p["st"][dd] not in STABLE and s["st"][dd] in STABLE | {4}:
                     self._sequence_done(dd, p, s)
                 elif p["st"][dd] in STABLE and s["st"][dd] in STABLE and p["st"][dd] != s["st"][dd]:
@@ -285,18 +312,20 @@ class Env:
             self.cov.power_up(dd, bool(HAS_RET[dd] and exp_ret != [0] * N_RET))
 
     # ----------------------------------------------------------------- sequence scoreboard
+    # Expected output changes per sequence (SPEC 4). Each step must come in a later cycle than the
+    # previous one, except steps marked "=", which the design makes in the same cycle on purpose.
     TEMPLATES = {
         "pd_ret":  [("QREQn", 0), ("clk_en", 0), ("iso_en", 1), ("ret_save", 1), ("ret_save", 0),
-                    ("rst_n", 0), ("psw_main_en", 0), ("psw_trickle_en", 0)],
+                    ("rst_n", 0, "="), ("psw_main_en", 0), ("psw_trickle_en", 0)],
         "pd_off":  [("QREQn", 0), ("clk_en", 0), ("iso_en", 1), ("rst_n", 0), ("psw_main_en", 0),
                     ("psw_trickle_en", 0)],
-        "cg_ret":  [("iso_en", 1), ("ret_save", 1), ("ret_save", 0), ("rst_n", 0), ("psw_main_en", 0),
+        "cg_ret":  [("iso_en", 1), ("ret_save", 1), ("ret_save", 0), ("rst_n", 0, "="), ("psw_main_en", 0),
                     ("psw_trickle_en", 0)],
         "cg_off":  [("iso_en", 1), ("rst_n", 0), ("psw_main_en", 0), ("psw_trickle_en", 0)],
         "cg_down": [("QREQn", 0), ("clk_en", 0)],
         "cg_up":   [("clk_en", 1), ("QREQn", 1)],
         "pu_rest": [("psw_trickle_en", 1), ("psw_main_en", 1), ("ret_restore", 1), ("ret_restore", 0),
-                    ("rst_n", 1), ("clk_en", 1), ("iso_en", 0), ("QREQn", 1)],
+                    ("rst_n", 1, "="), ("clk_en", 1), ("iso_en", 0), ("QREQn", 1)],
         "pu":      [("psw_trickle_en", 1), ("psw_main_en", 1), ("rst_n", 1), ("clk_en", 1),
                     ("iso_en", 0), ("QREQn", 1)],
         "deny":    [("QREQn", 0), ("QREQn", 1)],
@@ -324,7 +353,7 @@ class Env:
         elif frm == 1 and to == 3:
             kind = "cg_off"
         elif frm in (2, 3) and to == 0:
-            kind = "pu_rest" if any(e == ("ret_restore", 1) for e in ev) else "pu"
+            kind = "pu_rest" if any(e[:2] == ("ret_restore", 1) for e in ev) else "pu"
             if frm == 2 and HAS_RET[dd] and kind != "pu_rest":
                 self.err(f"PD{dd}: power-up from RET without ret_restore")
         elif frm == 2 and to == 3:
@@ -334,16 +363,21 @@ class Env:
         if to == 4:
             self.after_fault[dd] = True
         elif kind in self.TEMPLATES:
-            tpl = self.TEMPLATES[kind]
+            full = self.TEMPLATES[kind]
+            tpl = full
             if self.after_fault[dd]:
                 # resumed after a FAULT: the events since the fault must be the rest of the template
                 # (a power-switch fault goes straight to OFF, with no events)
-                ok = ev == tpl[len(tpl) - len(ev):] if len(ev) <= len(tpl) else False
+                tpl = full[len(full) - len(ev):] if len(ev) <= len(full) else None
                 kind = "fault_exit"
-            else:
-                ok = ev == tpl
+            ok = tpl is not None and [e[:2] for e in ev] == [t[:2] for t in tpl]
+            if ok:
+                for i in range(1, len(ev)):
+                    same_ok = len(tpl[i]) > 2 and tpl[i][2] == "="
+                    if ev[i][2] < ev[i - 1][2] or (ev[i][2] == ev[i - 1][2] and not same_ok):
+                        ok = False
             if not ok:
-                self.err(f"PD{dd}: sequence {kind} ({frm}->{to}) out of order: {ev}")
+                self.err(f"PD{dd}: sequence {kind} ({frm}->{to}) out of order or steps merged: {ev}")
             self.after_fault[dd] = False
         self.seq_checked += 1
         self.seq_log.append((dd, kind))

@@ -211,12 +211,18 @@ module pmu_props #(
         p7a: assert (pmu_top.PREADY == access);
         if (pmu_top.PSLVERR) p7b: assert (access && pmu_top.PREADY);
     end
-    // P7: configuration registers change only on a valid write to their own address
+    // P7: configuration registers change only on a valid write to their own address.
+    // "Valid write" is computed here from the APB pins and the register map, independently of the
+    // design's own decode (a mutation using the design's `we` went unnoticed: DECISIONS F-005).
+    logic [11:0] wa;
+    assign wa = {pmu_top.PADDR[11:2], 2'b00};
     logic wr_ok;
-    assign wr_ok = pmu_top.u_regs.we;
+    assign wr_ok = pmu_top.PSEL && pmu_top.PENABLE && pmu_top.PWRITE &&
+                   !((wa == pmu_regmap_pkg::ADDR_MODE_REQ || wa == pmu_regmap_pkg::ADDR_WAKE_MODE) &&
+                     pmu_top.PWDATA[2:0] > 3'd4);
     `define P7_REG(reg, addr) \
         always @(posedge clk) if (past_ok && $past(rstn) && rstn && `CHANGED(pmu_top.u_regs.reg)) \
-            p7_``reg: assert ($past(wr_ok && pmu_top.u_regs.a == pmu_regmap_pkg::addr));
+            p7_``reg: assert ($past(wr_ok && wa == pmu_regmap_pkg::addr));
     `P7_REG(dly_trickle, ADDR_DLY_TRICKLE)
     `P7_REG(dly_main,    ADDR_DLY_MAIN)
     `P7_REG(dly_clk,     ADDR_DLY_CLK)

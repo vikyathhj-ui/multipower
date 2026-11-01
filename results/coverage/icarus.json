@@ -1,7 +1,7 @@
 {
   "bins": 137,
-  "covered": 134,
-  "percent": 97.81,
+  "covered": 137,
+  "percent": 100.0,
   "points": {
     "transition": {
       "bins": 25,
@@ -12,22 +12,9 @@
     },
     "dom_seq": {
       "bins": 32,
-      "covered": 29,
-      "percent": 90.62,
-      "missed": [
-        [
-          0,
-          "fault_exit"
-        ],
-        [
-          1,
-          "fault_exit"
-        ],
-        [
-          2,
-          "fault_exit"
-        ]
-      ],
+      "covered": 32,
+      "percent": 100.0,
+      "missed": [],
       "ignored": [
         {
           "bin": [

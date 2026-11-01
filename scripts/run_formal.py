@@ -35,7 +35,11 @@ def parse(task: str) -> dict:
     d = FORMAL / f"pmu_{task}"
     status = (d / "status").read_text().split()[0] if (d / "status").exists() else "MISSING"
     log = (d / "logfile.txt").read_text(errors="replace") if (d / "logfile.txt").exists() else ""
-    rec = {"task": task, "status": status, "source": str((d / "logfile.txt").relative_to(REPO))}
+    keep = REPO / "results" / "formal" / f"{task}_logfile.txt"     # committed copy of the SBY log
+    if (d / "logfile.txt").exists():
+        keep.parent.mkdir(parents=True, exist_ok=True)
+        keep.write_text((d / "logfile.txt").read_text(errors="replace"))
+    rec = {"task": task, "status": status, "source": str(keep.relative_to(REPO))}
     if task in ("prove", "live"):
         m = re.search(r"summary: (successful proof by k-induction)", log)
         rec["method"] = m.group(1) if m else None
@@ -44,10 +48,17 @@ def parse(task: str) -> dict:
         rec["asserts"] = len(re.findall(r"\$assert|\$check", (d / "model" / "design.log").read_text(errors="replace"))) \
             if (d / "model" / "design.log").exists() else None
     else:
-        reached = sorted(set(re.findall(r"Reached cover statement (?:in pmu_top )?at (\S+)", log)))
-        unreached = sorted(set(re.findall(r"Unreached cover statement (?:in pmu_top )?at (\S+)", log)))
-        rec.update({"reached": len(reached), "unreached": unreached,
-                    "reached_list": reached})
+        reached = sorted(set(re.findall(r"Reached cover statement in step \d+ at pmu_top: (\S+)", log)))
+        unreached = sorted(set(re.findall(r"Unreached cover statement at pmu_top: (\S+)", log)))
+        steps = re.findall(r"Checking cover reachability in step (\d+)", log)
+        rec.update({"reached": len(reached), "unreached": unreached, "reached_list": reached})
+        if status == "MISSING" and steps:
+            # the run was stopped before SBY finished: covers not reached are open, checked only
+            # up to the last completed step
+            rec["status"] = "INCOMPLETE"
+            rec["last_completed_step"] = int(steps[-1]) - 1
+            rec["note"] = ("run stopped before completion (2.5 h timeout in scripts' wrapper); "
+                           "covers not in reached_list were not reached up to last_completed_step")
     m = re.search(r"Elapsed clock time \[H:MM:SS \(secs\)\]: \S+ \((\d+)\)", log)
     rec["seconds"] = int(m.group(1)) if m else None
     return rec
@@ -64,8 +75,14 @@ def main(argv=None) -> int:
             print(f"sby {t} ...", flush=True)
             run(t)
     recs = [parse(t) for t in TASKS if (FORMAL / f"pmu_{t}").exists()]
-    ok = all(r["status"] == "PASS" for r in recs) and len(recs) == len(TASKS)
-    summary = {"result": "PASS" if ok else "FAIL", "tool": "SymbiYosys + yices (smtbmc)", "tasks": recs}
+    proofs = [r for r in recs if r["task"] in ("prove", "live")]
+    proofs_ok = len(proofs) == 2 and all(r["status"] == "PASS" for r in proofs)
+    cover = next((r for r in recs if r["task"] == "cover"), None)
+    covers_ok = cover is not None and cover["status"] == "PASS"
+    ok = proofs_ok and covers_ok
+    summary = {"result": "PASS" if ok else "FAIL", "proofs": "PASS" if proofs_ok else "FAIL",
+               "covers": "PASS" if covers_ok else (cover or {}).get("status", "MISSING"),
+               "tool": "SymbiYosys + yices (smtbmc)", "tasks": recs}
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(json.dumps(summary, indent=2) + "\n")
     for r in recs:

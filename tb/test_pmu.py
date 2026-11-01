@@ -350,6 +350,33 @@ async def test_wake_sources(dut):
 
 
 @cocotb.test()
+async def test_reset_while_on(dut):
+    """PMU reset while the domains are powered (directed regression for formal bug F-001).
+    The switches are still on when the PMU leaves reset and then turn off. Their switch-off delay
+    is swept so that, in some iteration, an ack falls just before the PMU re-enables the switch;
+    DLY_TRICKLE = DLY_MAIN = 1 make the hold short enough to finish on a stale synchronised ack.
+    The pin-level power check in the env fails if a domain is released while unpowered."""
+    cfg = Cfg(sw_lat=(3, 8))
+    env = await boot(dut, cfg)
+    n = 0
+    for off_delay in range(1, 17):
+        for rst_len in (1, 2, 3):
+            cfg.sw_lat = (3, 8)
+            await env.set_mode("RUN")
+            cfg.sw_lat = (off_delay, off_delay)
+            await env.pmu_reset(rst_len)
+            await env.apb.wreg("DLY_TRICKLE", 1)
+            await env.apb.wreg("DLY_MAIN", 1)
+            env.dly_trickle = 1
+            if not await env.wait_stable(3000):
+                env.err(f"off delay {off_delay}, reset {rst_len}: boot did not finish")
+            check_states(env, [ST["ON"]] * N_PD, f"off delay {off_delay}, reset {rst_len}")
+            n += 1
+    env.dly_trickle = rm.REGS["DLY_TRICKLE"]["reset"]
+    finish(env, "test_reset_while_on", f" ({n} resets)")
+
+
+@cocotb.test()
 async def test_soak(dut):
     """>= 10^4 random mode requests with random latencies, random delays, occasional denies and
     requests arriving mid-transition; every check runs throughout."""

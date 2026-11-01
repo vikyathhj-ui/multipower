@@ -1,0 +1,107 @@
+{
+  "result": "PASS",
+  "mutants": [
+    {
+      "mutant": "control",
+      "file": "rtl/pd_ctrl.sv",
+      "breaks": "none (harness check)",
+      "sim": "PASS (expected)",
+      "tests_failed": 0,
+      "formal": "PASS (expected)",
+      "first_error": ""
+    },
+    {
+      "mutant": "iso_release_early",
+      "file": "rtl/pd_ctrl.sv",
+      "breaks": "isolation released before the clock runs (power-up order)",
+      "sim": "FAIL (caught)",
+      "tests_failed": 9,
+      "formal": "FAIL (caught)",
+      "first_error": "400.00ns ERROR cocotb.tb_top [cycle 38] PD0: sequence pu (3->0) out of order or steps merged: [('psw_trickle_en', 1, 5), ('psw_main_en', 1, 17), ('rst_n', 1, 28), ('clk_en', 1, 30), ('iso_en', 0, 30),"
+    },
+    {
+      "mutant": "no_ret_save",
+      "file": "rtl/pd_ctrl.sv",
+      "breaks": "retention state not saved",
+      "sim": "FAIL (caught)",
+      "tests_failed": 5,
+      "first_error": "68900.00ns ERROR cocotb.tb_top [cycle 189] PD0: sequence pd_ret (0->2) out of order or steps merged: [('QREQn', 0, 160), ('clk_en', 0, 167), ('iso_en', 1, 169), ('rst_n', 0, 173), ('psw_main_en', 0, 1"
+    },
+    {
+      "mutant": "no_restore",
+      "file": "rtl/pd_ctrl.sv",
+      "breaks": "retention not restored on power-up",
+      "sim": "FAIL (caught)",
+      "tests_failed": 5,
+      "first_error": "69410.00ns ERROR cocotb.tb_top [cycle 240] PD0: power-up from RET without ret_restore"
+    },
+    {
+      "mutant": "arb_no_hold",
+      "file": "rtl/inrush_arb.sv",
+      "breaks": "arbiter re-grants every cycle (inrush)",
+      "sim": "FAIL (caught)",
+      "tests_failed": 2,
+      "formal": "FAIL (caught)",
+      "first_error": "133000.00ns ERROR cocotb.tb_top [cycle 2381] inrush: 2 domains in the power-up switching phase (property 5)"
+    },
+    {
+      "mutant": "qreq_rule",
+      "file": "rtl/qch_master.sv",
+      "breaks": "QREQn rises from Q_REQUEST (Q-Channel rule)",
+      "sim": "FAIL (caught)",
+      "tests_failed": 6,
+      "formal": "FAIL (caught)",
+      "first_error": "68170.00ns ERROR cocotb.tb_top [cycle 116] PD0: QREQn rose with QACCEPTn=1, QDENY=0"
+    },
+    {
+      "mutant": "trickle_first_off",
+      "file": "rtl/pd_ctrl.sv",
+      "breaks": "trickle switch turned off before main",
+      "sim": "FAIL (caught)",
+      "tests_failed": 6,
+      "first_error": "118600.00ns ERROR cocotb.tb_top [cycle 5158] mode SLEEP not reached within 5000 cycles; states [4, 4, 1]"
+    },
+    {
+      "mutant": "no_settle",
+      "file": "rtl/pd_ctrl.sv",
+      "breaks": "regression of formal bug F-001 (stale ack)",
+      "sim": "FAIL (caught)",
+      "tests_failed": 1,
+      "formal": "FAIL (caught)",
+      "first_error": "291690.01ns ERROR cocotb.tb_top [cycle 869] PD0: main switch on after only 0 cycles of trickle ack (DLY_TRICKLE 1; property 4)"
+    },
+    {
+      "mutant": "err_write_takes",
+      "file": "rtl/apb_regs.sv",
+      "breaks": "an erroring APB write changes a register",
+      "sim": "FAIL (caught)",
+      "tests_failed": 1,
+      "formal": "FAIL (caught)",
+      "first_error": "66950.00ns ERROR cocotb.tb_top [cycle 6266] MODE_REQ changed after erroring transfers: 0x0 -> 0x7"
+    },
+    {
+      "mutant": "no_psw_timeout",
+      "file": "rtl/pd_ctrl.sv",
+      "breaks": "switch timeouts never fire",
+      "sim": "FAIL (caught)",
+      "tests_failed": 1,
+      "first_error": "142140.00ns ERROR cocotb.tb_top [cycle 3294] main_off PD0: no FAULT (states [11, 3, 3], injected=True)"
+    },
+    {
+      "mutant": "deny_ignored",
+      "file": "rtl/pd_ctrl.sv",
+      "breaks": "a deny is not handled",
+      "sim": "FAIL (caught)",
+      "tests_failed": 3,
+      "first_error": "139610.00ns ERROR cocotb.tb_top [cycle 5111] mode IDLE not reached within 5000 cycles; states [4, 1, 0]"
+    },
+    {
+      "mutant": "wake_mask_inverted",
+      "file": "rtl/wake_ctrl.sv",
+      "breaks": "wake mask polarity",
+      "sim": "FAIL (caught)",
+      "tests_failed": 2,
+      "first_error": "150330.01ns ERROR cocotb.tb_top [cycle 138] wake at +0 during RUN->SHUTDOWN: domain states [3, 3, 3], expected [0, 0, 0]"
+    }
+  ]
+}

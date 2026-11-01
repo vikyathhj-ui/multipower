@@ -1,0 +1,34 @@
+{
+  "bound_cycles": 2874,
+  "parts": {
+    "power_down": 776,
+    "stable_exit": 1,
+    "arbiter_wait": 1051,
+    "power_up": 787,
+    "clock_gate": 259
+  },
+  "per_state": {
+    "D_QWAIT": 256,
+    "D_CLK": 2,
+    "D_ISO": 2,
+    "D_SAVE": 2,
+    "D_RST": 2,
+    "D_MAIN_OFF": 256,
+    "D_TRK_OFF": 256,
+    "U_TRK_ON": 264,
+    "U_MAIN_ON": 260,
+    "U_RESTORE": 2,
+    "U_RST": 2,
+    "U_CLK": 2,
+    "U_ISO": 1,
+    "U_QEXIT": 256,
+    "stable": 1
+  },
+  "assumptions": [
+    "configuration at reset values (DLY_*/TMO_* not written)",
+    "no deny, no fault",
+    "no new MODE_REQ or wake event while the request is in progress",
+    "per-state bounds proven by `sby -f formal/pmu.sby live`"
+  ],
+  "source": "scripts/liveness_bound.py from scripts/regmap.yaml reset values"
+}

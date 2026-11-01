@@ -1,0 +1,55 @@
+{
+  "result": "FAIL",
+  "proofs": "PASS",
+  "covers": "INCOMPLETE",
+  "tool": "SymbiYosys + yices (smtbmc)",
+  "tasks": [
+    {
+      "task": "prove",
+      "status": "PASS",
+      "source": "results/formal/prove_logfile.txt",
+      "method": "successful proof by k-induction",
+      "failed": [],
+      "asserts": 1,
+      "seconds": 16
+    },
+    {
+      "task": "live",
+      "status": "PASS",
+      "source": "results/formal/live_logfile.txt",
+      "method": "successful proof by k-induction",
+      "failed": [],
+      "asserts": 1,
+      "seconds": 13
+    },
+    {
+      "task": "cover",
+      "status": "INCOMPLETE",
+      "source": "results/formal/cover_logfile.txt",
+      "reached": 17,
+      "unreached": [],
+      "reached_list": [
+        "u_props.g_d[0].c_cg",
+        "u_props.g_d[0].c_deny",
+        "u_props.g_d[0].c_fault",
+        "u_props.g_d[0].c_off",
+        "u_props.g_d[0].c_on",
+        "u_props.g_d[0].g_ret.c_ret",
+        "u_props.g_d[1].c_cg",
+        "u_props.g_d[1].c_deny",
+        "u_props.g_d[1].c_fault",
+        "u_props.g_d[1].c_off",
+        "u_props.g_d[1].c_on",
+        "u_props.g_d[1].g_ret.c_ret",
+        "u_props.g_d[2].c_cg",
+        "u_props.g_d[2].c_deny",
+        "u_props.g_d[2].c_fault",
+        "u_props.g_d[2].c_off",
+        "u_props.g_d[2].c_on"
+      ],
+      "last_completed_step": 77,
+      "note": "run stopped before completion (2.5 h timeout in scripts' wrapper); covers not in reached_list were not reached up to last_completed_step",
+      "seconds": null
+    }
+  ]
+}
