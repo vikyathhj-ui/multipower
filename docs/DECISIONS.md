@@ -149,6 +149,48 @@ only part of it.
 - The property was rewritten as one implication per state group, which is also easier to read; it
   proves. Recorded so the observation is not lost.
 
+## D-014 — Representative load for the break-even analysis (owner's choice)
+- **Context:** BRIEF A4 suggests the P1 ALU's post-synthesis cell list as PD_CPU's leakage load, or
+  "a clearly labelled representative netlist". The owner chose the representative netlist
+  (2026-11-01).
+- **Choice:** the only open design in the container is LibreLane's example `spm` (serial-parallel
+  multiplier).
+  - It is synthesised to `sky130_fd_sc_hd` (yosys + abc, `results/power/rep_cells.json`).
+  - Its cell mix gives the average leakage per cell, read from the liberty at each corner.
+  - Domain sizes, flop fraction, clock-tree factor and switched capacitance are named assumptions
+    (`analysis/breakeven.py` `PARAMS`).
+- **Limit:** `spm` is one-third flops, which is not CPU-like. The flop fraction for clock power is
+  therefore a separate parameter (0.15), not the `spm` value. Downloading a CPU core was not done:
+  it would be acting outside this repo (BRIEF rule 4).
+
+## D-015 — sky130 low-power cells survive LibreLane (BRIEF rule 6 check resolved)
+- **Question:** LibreLane's sky130 configuration lists `sky130_fd_sc_hd__lpflow_*` as excluded
+  from synthesis and PnR. Would the isolation cells instantiated in `iso_wrap` survive?
+- **Result:** yes. The synthesised netlist of the PMU run (`flow/runs/pmu_T20`) keeps all 9
+  `lpflow_inputiso0p_1` and all 3 `dlclkp_1`, and they are placed. The exclusion stops the tools
+  from *choosing* those cells (mapping, resizing); it does not remove cells the RTL instantiates.
+- **Consequence:** no fallback to behavioural clamps is needed in the PMU layout.
+
+## D-016 — Exclude delay cells from place-and-route repair (PMU closes at 20 ns)
+- **Symptom:** the first PMU layout at 20 ns (`flow/runs/pmu_T20`, metrics kept in
+  `results/flow/T20_with_delay_cells_metrics.json`) failed setup at the three `ss` corners. Worst
+  slack was −1.081 ns at `max_ss_100C_1v60`; TT and FF had about 4.7–5 ns of slack.
+- **Cause:** the single failing path, a configuration register to domain 0's `ret_valid` through a
+  counter compare, had **34 `clkdlybuf4s*` delay cells** on it. OpenROAD's repair used them as
+  fanout buffers, because LibreLane's sky130 configuration excludes them from synthesis but not
+  from PnR. This is the same effect found in the P1 STA report; there it was documented but not
+  tested.
+- **Choice:** `EXTRA_EXCLUDED_CELLS: ["sky130_fd_sc_hd__clkdlybuf*", "sky130_fd_sc_hd__dlygate*"]`
+  in `flow/config.json`.
+- **Result** (`flow/runs/pmu_T20_nodly`, `results/summary.json`):
+  - worst setup slack +2.924 ns at `max_ss_100C_1v60` (fmax 58.56 MHz there);
+  - **all 9 corners close**; worst hold slack 0.107 ns;
+  - cell area 33,732.4 µm², against 35,646.7 µm²;
+  - Magic/KLayout DRC, LVS and antenna all 0;
+  - the 9 `lpflow_inputiso0p_1` and 3 `dlclkp_1` cells are kept.
+- **Also:** `OPENROAD_THREADS: 4`. LibreLane passed `-threads None` when it was unset (it uses
+  `str(None)`), and OpenROAD fell back to one thread.
+
 ---
 
 ## Bugs found by formal

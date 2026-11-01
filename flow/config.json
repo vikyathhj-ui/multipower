@@ -1,0 +1,32 @@
+{
+    "DESIGN_NAME": "pmu_top",
+    "VERILOG_FILES": [
+        "dir::../rtl/pmu_regmap_pkg.sv",
+        "dir::../rtl/sync_ff.sv",
+        "dir::../rtl/rst_sync.sv",
+        "dir::../rtl/cells/icg_wrap.sv",
+        "dir::../rtl/cells/iso_wrap.sv",
+        "dir::../rtl/qch_master.sv",
+        "dir::../rtl/inrush_arb.sv",
+        "dir::../rtl/wake_ctrl.sv",
+        "dir::../rtl/pd_ctrl.sv",
+        "dir::../rtl/apb_regs.sv",
+        "dir::../rtl/pmu_top.sv"
+    ],
+    "USE_SLANG": true,
+    "VERILOG_DEFINES": [
+        "PMU_SKY130_CELLS"
+    ],
+    "CLOCK_PORT": "PCLK",
+    "CLOCK_PERIOD": 20.0,
+    "FP_SIZING": "relative",
+    "FP_CORE_UTIL": 40,
+    "PL_TARGET_DENSITY_PCT": 50,
+    "RUN_POST_GRT_DESIGN_REPAIR": true,
+    "RUN_POST_GRT_RESIZER_TIMING": true,
+    "EXTRA_EXCLUDED_CELLS": [
+        "sky130_fd_sc_hd__clkdlybuf*",
+        "sky130_fd_sc_hd__dlygate*"
+    ],
+    "OPENROAD_THREADS": 4
+}

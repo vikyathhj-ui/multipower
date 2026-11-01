@@ -1,0 +1,117 @@
+##############################################################################################
+# pmu_soc.upf -- power intent for the PMU reference SoC (IEEE 1801-2015 syntax)
+#
+# No open-source UPF checker exists; this file documents intent and is reviewed manually
+# against the RTL; see docs/UPF_REVIEW.md.
+#
+# Scope: the reference SoC of the testbench (tb/tb_top.sv): the PMU (u_pmu) in the always-on
+# domain and three switchable domains, g_dom[0..2].u_dom (PD_CPU, PD_DSP, PD_PERI), each a
+# behavioural domain shell (tb/domain_shell.sv). All domains share one 1.8 V supply, so there are
+# no level shifters. Control signals come from the PMU ports (rtl/pmu_top.sv, docs/SPEC.md 2.3).
+##############################################################################################
+
+set_design_top tb_top
+
+# ------------------------------------------------------------------ supplies
+create_supply_port VDD    -direction in
+create_supply_port VSS    -direction in
+
+create_supply_net  VDD
+create_supply_net  VSS
+connect_supply_net VDD -ports VDD
+connect_supply_net VSS -ports VSS
+
+# switched supplies, one per switchable domain
+create_supply_net  VDD_CPU
+create_supply_net  VDD_DSP
+create_supply_net  VDD_PERI
+
+create_supply_set  ss_aon  -function {power VDD}      -function {ground VSS}
+create_supply_set  ss_cpu  -function {power VDD_CPU}  -function {ground VSS}
+create_supply_set  ss_dsp  -function {power VDD_DSP}  -function {ground VSS}
+create_supply_set  ss_peri -function {power VDD_PERI} -function {ground VSS}
+
+# ------------------------------------------------------------------ power domains
+create_power_domain PD_AON  -include_scope -supply {primary ss_aon}
+create_power_domain PD_CPU  -elements {g_dom[0].u_dom} -supply {primary ss_cpu} -supply {default_retention ss_aon}
+create_power_domain PD_DSP  -elements {g_dom[1].u_dom} -supply {primary ss_dsp} -supply {default_retention ss_aon}
+create_power_domain PD_PERI -elements {g_dom[2].u_dom} -supply {primary ss_peri}
+
+# Isolation cells and retention shadows are powered from AON: the PMU and the clamps sit in
+# PD_AON (SPEC 2.2; iso_wrap instances on the AON side of each shell output).
+
+# ------------------------------------------------------------------ power switches (staged)
+# Trickle (weak) switch first, then main (strong) switch, each with an acknowledge
+# (SPEC 4.3 steps 1-4; inrush rule SPEC 4.4). Control and ack ports are PMU ports.
+foreach {pd idx net} {PD_CPU 0 VDD_CPU PD_DSP 1 VDD_DSP PD_PERI 2 VDD_PERI} {
+    create_power_switch sw_trickle_$pd -domain $pd \
+        -input_supply_port  {vin  VDD} \
+        -output_supply_port [list vout $net] \
+        -control_port       [list ctrl u_pmu/psw_trickle_en\[$idx\]] \
+        -ack_port           [list ack  u_pmu/psw_trickle_ack\[$idx\]] \
+        -on_state           {on vin {ctrl}} \
+        -off_state          {off {!ctrl}}
+    create_power_switch sw_main_$pd -domain $pd \
+        -input_supply_port  {vin  VDD} \
+        -output_supply_port [list vout $net] \
+        -control_port       [list ctrl u_pmu/psw_main_en\[$idx\]] \
+        -ack_port           [list ack  u_pmu/psw_main_ack\[$idx\]] \
+        -on_state           {on vin {ctrl}} \
+        -off_state          {off {!ctrl}}
+}
+
+# ------------------------------------------------------------------ isolation
+# Every output of a switchable domain is isolated on the parent (AON) side, controlled by the PMU,
+# active high. Clamp values per port (domain_shell outputs): the register bus clamps to 0 and the
+# "not ready" flag rdy_n to 1. The domain's Q-Channel outputs QACCEPTn/QDENY/QACTIVE clamp to 0
+# (IHI 0068D 2.1.1: the quiescent state is all LOW); those clamps are inside the PMU (iso_wrap).
+foreach {pd idx} {PD_CPU 0 PD_DSP 1 PD_PERI 2} {
+    set_isolation iso_${pd}_c0 -domain $pd \
+        -elements [list g_dom\[$idx\].u_dom/regs_raw] \
+        -isolation_supply ss_aon -clamp_value 0 \
+        -isolation_signal u_pmu/iso_en\[$idx\] -isolation_sense high -location parent
+    set_isolation iso_${pd}_c1 -domain $pd \
+        -elements [list g_dom\[$idx\].u_dom/rdy_n_raw] \
+        -isolation_supply ss_aon -clamp_value 1 \
+        -isolation_signal u_pmu/iso_en\[$idx\] -isolation_sense high -location parent
+}
+
+# ------------------------------------------------------------------ retention
+# PD_CPU and PD_DSP: the retention registers (rlive) keep an always-on shadow. Save and restore
+# are active-high pulses from the PMU (SPEC 4.1 step 5, 4.3 step 5). PD_PERI has no retention.
+foreach {pd idx} {PD_CPU 0 PD_DSP 1} {
+    set_retention ret_$pd -domain $pd \
+        -elements [list g_dom\[$idx\].u_dom/rlive] \
+        -retention_supply ss_aon \
+        -save_signal    [list u_pmu/ret_save\[$idx\]    high] \
+        -restore_signal [list u_pmu/ret_restore\[$idx\] high]
+}
+
+# ------------------------------------------------------------------ power states
+# Supply-set states (1801-2015 add_power_state). A switchable supply is ON or OFF; RET is a
+# domain state with its primary supply OFF and its retention supply (ss_aon) ON.
+add_power_state ss_aon -state ON  {-supply_expr {power == FULL_ON && ground == FULL_ON}}
+foreach ss {ss_cpu ss_dsp ss_peri} {
+    add_power_state $ss -state ON  {-supply_expr {power == FULL_ON && ground == FULL_ON}}
+    add_power_state $ss -state OFF {-supply_expr {power == OFF}}
+}
+
+# Domain states (SPEC 3.1). CLK_GATED is electrically ON (clock gating is not a supply state);
+# it is listed so the system states below can name it.
+foreach pd {PD_CPU PD_DSP PD_PERI} ss {ss_cpu ss_dsp ss_peri} {
+    add_power_state $pd -state ON        [list -logic_expr "$ss == ON"]
+    add_power_state $pd -state CLK_GATED [list -logic_expr "$ss == ON"]
+    add_power_state $pd -state OFF       [list -logic_expr "$ss == OFF"]
+}
+foreach pd {PD_CPU PD_DSP} ss {ss_cpu ss_dsp} {
+    add_power_state $pd -state RET [list -logic_expr "$ss == OFF && ss_aon == ON"]
+}
+
+# System modes = the mode table (SPEC 3.2, BRIEF A2); legal combinations only. A RET target is
+# also met by OFF (a domain already OFF is not powered up only to be retained again: SPEC 3.2,
+# DECISIONS D-003.4), so SLEEP and DEEP_SLEEP allow OFF where the table says RET.
+add_power_state PD_AON -state RUN        {-logic_expr {PD_CPU == ON        && PD_DSP == ON        && PD_PERI == ON}}
+add_power_state PD_AON -state IDLE       {-logic_expr {PD_CPU == CLK_GATED && PD_DSP == CLK_GATED && PD_PERI == ON}}
+add_power_state PD_AON -state SLEEP      {-logic_expr {(PD_CPU == RET || PD_CPU == OFF) && (PD_DSP == RET || PD_DSP == OFF) && PD_PERI == CLK_GATED}}
+add_power_state PD_AON -state DEEP_SLEEP {-logic_expr {(PD_CPU == RET || PD_CPU == OFF) && PD_DSP == OFF && PD_PERI == OFF}}
+add_power_state PD_AON -state SHUTDOWN   {-logic_expr {PD_CPU == OFF       && PD_DSP == OFF       && PD_PERI == OFF}}

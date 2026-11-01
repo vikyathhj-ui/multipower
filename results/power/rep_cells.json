@@ -1,0 +1,12 @@
+{
+  "design": "LibreLane example spm (serial-parallel multiplier), yosys synth + abc to sky130_fd_sc_hd",
+  "cells": {
+    "sky130_fd_sc_hd__a21oi_1": 1,
+    "sky130_fd_sc_hd__and2_0": 31,
+    "sky130_fd_sc_hd__and3_1": 1,
+    "sky130_fd_sc_hd__dfrtp_1": 64,
+    "sky130_fd_sc_hd__maj3_1": 31,
+    "sky130_fd_sc_hd__nor2_1": 1,
+    "sky130_fd_sc_hd__xor3_1": 31
+  }
+}

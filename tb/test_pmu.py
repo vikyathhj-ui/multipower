@@ -419,6 +419,36 @@ async def test_soak(dut):
     finish(env, "test_soak", f" ({n} requests, {checks} end-state checks)")
 
 
+# Fixed model latencies for the latency measurement (named assumptions, docs/POWER_ANALYSIS.md)
+LAT_Q_CYCLES = 2          # Q-Channel device response
+LAT_SW_CYCLES = 4         # power-switch acknowledge
+
+
+@cocotb.test()
+async def test_latency(dut):
+    """Measure entry and exit time of every low-power mode from RUN (reset delay registers, fixed
+    model latencies) for the break-even analysis; writes PMU_LAT_OUT (JSON) if set."""
+    import json
+    cfg = Cfg(q_lat=(LAT_Q_CYCLES, LAT_Q_CYCLES), sw_lat=(LAT_SW_CYCLES, LAT_SW_CYCLES), write_p=0.0)
+    env = await boot(dut, cfg)
+    res = {"pclk_ns": 10, "q_latency_cycles": LAT_Q_CYCLES, "switch_latency_cycles": LAT_SW_CYCLES,
+           "delays": "register reset values", "modes": {}}
+    for m in ("IDLE", "SLEEP", "DEEP_SLEEP", "SHUTDOWN"):
+        await goto(env, "RUN")
+        t0 = env.cycle
+        await env.set_mode(m)
+        t_entry = env.cycle - t0
+        t0 = env.cycle
+        await env.set_mode("RUN")
+        t_exit = env.cycle - t0
+        res["modes"][m] = {"entry_cycles": t_entry, "exit_cycles": t_exit}
+        dut._log.info(f"{m}: entry {t_entry} cycles, exit {t_exit} cycles")
+    out = os.environ.get("PMU_LAT_OUT")
+    if out:
+        Path(out).write_text(json.dumps(res, indent=2) + "\n")
+    finish(env, "test_latency")
+
+
 @cocotb.test()
 async def test_zz_coverage_report(dut):
     """Write the functional coverage collected by all tests (runs last)."""

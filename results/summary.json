@@ -1,0 +1,411 @@
+{
+  "pdk": "sky130A / sky130_fd_sc_hd",
+  "design": "pmu_top (always-on logic only)",
+  "flow": {
+    "run": "flow/runs/pmu_T20_nodly",
+    "source": "results/flow/metrics.json",
+    "clock_period_ns": 20.0,
+    "area": {
+      "stdcell_count": 4677,
+      "stdcell_area_um2": 33732.4,
+      "core_area_um2": 66801.6,
+      "die_area_um2": 75667.8,
+      "utilisation": 0.504963
+    },
+    "timing": {
+      "max_ff_n40C_1v95": {
+        "setup_ws_ns": 5.033110071177511,
+        "setup_tns_ns": 0,
+        "hold_ws_ns": 0.10705142630911119,
+        "hold_tns_ns": 0,
+        "fmax_MHz": 66.81
+      },
+      "max_ss_100C_1v60": {
+        "setup_ws_ns": 2.9243222004976244,
+        "setup_tns_ns": 0,
+        "hold_ws_ns": 0.850058381079401,
+        "hold_tns_ns": 0,
+        "fmax_MHz": 58.56
+      },
+      "max_tt_025C_1v80": {
+        "setup_ws_ns": 4.672131258563289,
+        "setup_tns_ns": 0,
+        "hold_ws_ns": 0.3066145202298739,
+        "hold_tns_ns": 0,
+        "fmax_MHz": 65.24
+      },
+      "min_ff_n40C_1v95": {
+        "setup_ws_ns": 5.072743257920692,
+        "setup_tns_ns": 0,
+        "hold_ws_ns": 0.10677947717153802,
+        "hold_tns_ns": 0,
+        "fmax_MHz": 66.99
+      },
+      "min_ss_100C_1v60": {
+        "setup_ws_ns": 3.650760685980181,
+        "setup_tns_ns": 0,
+        "hold_ws_ns": 0.832507752965156,
+        "hold_tns_ns": 0,
+        "fmax_MHz": 61.16
+      },
+      "min_tt_025C_1v80": {
+        "setup_ws_ns": 4.727783631737236,
+        "setup_tns_ns": 0,
+        "hold_ws_ns": 0.30578751507544133,
+        "hold_tns_ns": 0,
+        "fmax_MHz": 65.48
+      },
+      "nom_ff_n40C_1v95": {
+        "setup_ws_ns": 5.054234507309098,
+        "setup_tns_ns": 0,
+        "hold_ws_ns": 0.1069150909178314,
+        "hold_tns_ns": 0,
+        "fmax_MHz": 66.91
+      },
+      "nom_ss_100C_1v60": {
+        "setup_ws_ns": 3.308944323312941,
+        "setup_tns_ns": 0,
+        "hold_ws_ns": 0.8402137001747157,
+        "hold_tns_ns": 0,
+        "fmax_MHz": 59.91
+      },
+      "nom_tt_025C_1v80": {
+        "setup_ws_ns": 4.700144406712897,
+        "setup_tns_ns": 0,
+        "hold_ws_ns": 0.30624348368455057,
+        "hold_tns_ns": 0,
+        "fmax_MHz": 65.36
+      }
+    },
+    "power_W": {
+      "total": 0.0037240111269056797,
+      "internal": 0.0022233794443309307,
+      "switching": 0.0015005915192887187,
+      "leakage": 4.013349652609577e-08,
+      "label": "OpenSTA, LibreLane default activity (not annotated)"
+    },
+    "signoff": {
+      "magic_drc_errors": 0,
+      "klayout_drc_errors": 0,
+      "lvs_errors": 0,
+      "antenna_violating_nets": 0,
+      "route_drc_errors": 0
+    },
+    "closes_all_corners": true,
+    "worst_setup_ws_ns": 2.9243222004976244,
+    "worst_hold_ws_ns": 0.10677947717153802
+  },
+  "verification": {
+    "result": "PASS with open items",
+    "open_items": [
+      "formal covers: INCOMPLETE (17 reached; see results/formal/summary.json)"
+    ],
+    "problems": [],
+    "checks": {
+      "lint": {
+        "result": "PASS",
+        "configs": 4,
+        "source": "results/lint_summary.txt"
+      },
+      "simulation": {
+        "result": "PASS",
+        "tests": 11,
+        "failed": [],
+        "per_test": {
+          "test_reset_and_registers": {
+            "status": "PASS",
+            "sequences_checked": 3,
+            "errors": 0,
+            "detail": null
+          },
+          "test_apb_errors": {
+            "status": "PASS",
+            "sequences_checked": 3,
+            "errors": 0,
+            "detail": "1003 unmapped addresses"
+          },
+          "test_transition_matrix": {
+            "status": "PASS",
+            "sequences_checked": 107,
+            "errors": 0,
+            "detail": null
+          },
+          "test_deny_every_step": {
+            "status": "PASS",
+            "sequences_checked": 100,
+            "errors": 0,
+            "detail": "14 deny cases"
+          },
+          "test_timeout_every_wait": {
+            "status": "PASS",
+            "sequences_checked": 417,
+            "errors": 0,
+            "detail": "21 timeout cases"
+          },
+          "test_wake_race": {
+            "status": "PASS",
+            "sequences_checked": 546,
+            "errors": 0,
+            "detail": null
+          },
+          "test_wake_sources": {
+            "status": "PASS",
+            "sequences_checked": 15,
+            "errors": 0,
+            "detail": null
+          },
+          "test_reset_while_on": {
+            "status": "PASS",
+            "sequences_checked": 147,
+            "errors": 0,
+            "detail": "48 resets"
+          },
+          "test_soak": {
+            "status": "PASS",
+            "sequences_checked": 20779,
+            "errors": 0,
+            "detail": "10000 requests, 3516 end-state checks"
+          },
+          "test_latency": {
+            "status": "PASS",
+            "sequences_checked": 25,
+            "errors": 0,
+            "detail": null
+          }
+        },
+        "soak_requests": 10000,
+        "sequences_checked": 22142,
+        "source": "results/sim/icarus.xml"
+      },
+      "coverage": {
+        "percent": 100.0,
+        "bins": 137,
+        "covered": 137,
+        "missed": {},
+        "source": "results/coverage/icarus.json"
+      },
+      "formal": {
+        "result": "FAIL",
+        "proofs": "PASS",
+        "covers": "INCOMPLETE",
+        "covers_reached": 17,
+        "tasks": {
+          "prove": "PASS",
+          "live": "PASS",
+          "cover": "INCOMPLETE"
+        },
+        "source": "results/formal/summary.json"
+      },
+      "mutation": {
+        "result": "PASS",
+        "mutants": 12,
+        "missed": [
+          "control"
+        ],
+        "source": "results/mutation.json"
+      }
+    },
+    "source": "results/verify_summary.json"
+  },
+  "liveness_bound": {
+    "bound_cycles": 2874,
+    "parts": {
+      "power_down": 776,
+      "stable_exit": 1,
+      "arbiter_wait": 1051,
+      "power_up": 787,
+      "clock_gate": 259
+    },
+    "per_state": {
+      "D_QWAIT": 256,
+      "D_CLK": 2,
+      "D_ISO": 2,
+      "D_SAVE": 2,
+      "D_RST": 2,
+      "D_MAIN_OFF": 256,
+      "D_TRK_OFF": 256,
+      "U_TRK_ON": 264,
+      "U_MAIN_ON": 260,
+      "U_RESTORE": 2,
+      "U_RST": 2,
+      "U_CLK": 2,
+      "U_ISO": 1,
+      "U_QEXIT": 256,
+      "stable": 1
+    },
+    "assumptions": [
+      "configuration at reset values (DLY_*/TMO_* not written)",
+      "no deny, no fault",
+      "no new MODE_REQ or wake event while the request is in progress",
+      "per-state bounds proven by `sby -f formal/pmu.sby live`"
+    ],
+    "source": "results/formal/liveness_bound.json"
+  },
+  "latency": {
+    "pclk_ns": 10,
+    "q_latency_cycles": 2,
+    "switch_latency_cycles": 4,
+    "delays": "register reset values",
+    "modes": {
+      "IDLE": {
+        "entry_cycles": 13,
+        "exit_cycles": 13
+      },
+      "SLEEP": {
+        "entry_cycles": 33,
+        "exit_cycles": 70
+      },
+      "DEEP_SLEEP": {
+        "entry_cycles": 33,
+        "exit_cycles": 94
+      },
+      "SHUTDOWN": {
+        "entry_cycles": 31,
+        "exit_cycles": 94
+      }
+    },
+    "source": "results/sim/icarus_latency.json"
+  },
+  "breakeven": {
+    "source": "results/power/breakeven.json",
+    "assumptions": {
+      "F_CLK_MHZ": 50.0,
+      "N_CELLS": {
+        "CPU": 20000,
+        "DSP": 30000,
+        "PERI": 10000
+      },
+      "FLOP_FRACTION": 0.15,
+      "CLK_TREE_FACTOR": 2.0,
+      "N_RET_BITS": {
+        "CPU": 1024,
+        "DSP": 512,
+        "PERI": 0
+      },
+      "RET_LATCH_CELL": "sky130_fd_sc_hd__dlxtp_1",
+      "C_PER_CELL_FF": 5.0,
+      "E_RET_PER_BIT_FJ": 20.0,
+      "SWITCH_OFF_LEAK_FRACTION": 0.02,
+      "CLK_GATED_RESIDUAL": 0.0
+    },
+    "pmu_power_W": 0.0037240111269056797,
+    "breakeven_s": {
+      "TT": {
+        "IDLE": 4.4569783605171963e-07,
+        "SLEEP": 1.6324972668935976e-06,
+        "DEEP_SLEEP": 2.0043870601700913e-06,
+        "SHUTDOWN": 1.9718886288615464e-06
+      },
+      "SS": {
+        "IDLE": 5.957391298702234e-07,
+        "SLEEP": 1.8472824608919958e-06,
+        "DEEP_SLEEP": 2.2040669941458384e-06,
+        "SHUTDOWN": 2.1615944027934107e-06
+      },
+      "FF": {
+        "IDLE": 3.4768150120708954e-07,
+        "SLEEP": 1.1023627787026332e-06,
+        "DEEP_SLEEP": 1.31077428144639e-06,
+        "SHUTDOWN": 1.285936477284451e-06
+      }
+    },
+    "P_run_idle_W": {
+      "TT": 0.005214314666958,
+      "SS": 0.004677855812250001,
+      "FF": 0.00815643387
+    },
+    "P_mode_W": {
+      "TT": {
+        "IDLE": 0.0008694746669580001,
+        "SLEEP": 1.0506670358000002e-07,
+        "DEEP_SLEEP": 1.8251846680000003e-08,
+        "SHUTDOWN": 1.0133339160000002e-08
+      },
+      "SS": {
+        "IDLE": 0.0014272958122500002,
+        "SLEEP": 0.00016193412835249999,
+        "DEEP_SLEEP": 2.8510629205000002e-05,
+        "SHUTDOWN": 1.5543676245e-05
+      },
+      "FF": {
+        "IDLE": 0.002586721995,
+        "SLEEP": 0.00030710505684000005,
+        "DEEP_SLEEP": 5.4185898960000004e-05,
+        "SHUTDOWN": 2.94555924e-05
+      }
+    },
+    "breakeven_vs_IDLE_s": {
+      "TT": {
+        "SLEEP": 7.563753245467031e-06,
+        "DEEP_SLEEP": 9.79345523059861e-06,
+        "SHUTDOWN": 9.598484709362286e-06
+      },
+      "SS": {
+        "SLEEP": 5.062344795919738e-06,
+        "DEEP_SLEEP": 5.941571713147109e-06,
+        "SHUTDOWN": 5.766976952705253e-06
+      },
+      "FF": {
+        "SLEEP": 2.946250320834976e-06,
+        "DEEP_SLEEP": 3.42886819655909e-06,
+        "SHUTDOWN": 3.329450550250328e-06
+      }
+    },
+    "policy": {
+      "TT": [
+        {
+          "from_s": 1e-07,
+          "mode": "RUN (stay)"
+        },
+        {
+          "from_s": 4.466835921509635e-07,
+          "mode": "IDLE"
+        },
+        {
+          "from_s": 7.943282347242822e-06,
+          "mode": "SLEEP"
+        },
+        {
+          "from_s": 0.0199526231496888,
+          "mode": "SHUTDOWN"
+        }
+      ],
+      "SS": [
+        {
+          "from_s": 1e-07,
+          "mode": "RUN (stay)"
+        },
+        {
+          "from_s": 6.30957344480193e-07,
+          "mode": "IDLE"
+        },
+        {
+          "from_s": 5.623413251903491e-06,
+          "mode": "SLEEP"
+        },
+        {
+          "from_s": 1.2589254117941661e-05,
+          "mode": "SHUTDOWN"
+        }
+      ],
+      "FF": [
+        {
+          "from_s": 1e-07,
+          "mode": "RUN (stay)"
+        },
+        {
+          "from_s": 3.548133892335753e-07,
+          "mode": "IDLE"
+        },
+        {
+          "from_s": 3.162277660168379e-06,
+          "mode": "SLEEP"
+        },
+        {
+          "from_s": 7.079457843841373e-06,
+          "mode": "SHUTDOWN"
+        }
+      ]
+    }
+  }
+}

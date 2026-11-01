@@ -13,8 +13,8 @@ Required topics (BRIEF rule 7), and where they are answered:
 | inrush and staged switches | Q6 |
 | Q-Channel accept vs deny | Q8 |
 | why ICG cells rather than AND gates | Q12 |
-| break-even residency | Phase 4 |
-| what UPF describes that RTL doesn't | Phase 4 |
+| break-even residency | Q24, Q25 |
+| what UPF describes that RTL doesn't | Q27 |
 | immediate vs concurrent assertions | Q17 |
 | bounded vs unbounded proofs | Q18 |
 
@@ -206,3 +206,65 @@ Each counterexample trace is in `results/formal_cex/`.
 - The inrush protection did not work.
 
 All with file:line evidence in `docs/AUDIT.md`.
+
+## Power analysis, UPF and layout (Phase 4)
+
+**Q24. What is break-even residency?**
+- The shortest time a domain must stay in a low-power mode for the mode to save energy overall:
+  t_be = E_overhead / (P_before − P_mode).
+- E_overhead is what entering and leaving costs: recharging the switched domain's capacitance,
+  saving and restoring retention, and the PMU's work.
+- Stay shorter than t_be and the mode *wastes* energy.
+
+**Q25. What did your analysis find?**
+- **Clock gating (IDLE) pays off after about 0.45 µs at TT.** It costs about 2 nJ and removes the
+  clock-tree power, which dominates at 50 MHz.
+- **SLEEP beats IDLE after about 8 µs at TT.**
+- **Leakage depends heavily on temperature:** about 0.008 nW per cell at 25 °C against about 25 nW
+  at hot FF. So SHUTDOWN beats SLEEP only after 0.02 s at TT, but after about 7 µs at 100 °C.
+- **A good policy is temperature-aware,** and should prefer DEEP_SLEEP over SHUTDOWN when CPU
+  state matters, because my model gives the lost state no cost.
+- **Caveat:** these come from a representative load with named assumptions
+  (`docs/POWER_ANALYSIS.md`), not a real SoC.
+
+**Q26. Why is the PMU energy an upper bound in your overhead?**
+I charge the PMU's whole post-route power (3.72 mW, default activity) for every cycle of a
+transition. But the PMU is always on and clocked anyway; only the extra switching of a transition is
+real overhead. So the true break-even times are shorter than reported.
+
+**Q27. What does UPF describe that RTL doesn't?**
+- RTL describes logic and assumes every gate is always powered. UPF adds the power architecture:
+  - which instances belong to which power domain and supply;
+  - the power switches, with control and acknowledge ports;
+  - isolation strategies (which outputs, clamp value, enable, which side);
+  - retention strategies (which registers, save and restore signals, retention supply);
+  - the legal power states.
+- **Why tools need it:** power-aware simulators corrupt state from it, and implementation tools
+  insert the cells from it.
+- **What UPF does not say:** the *ordering* of the steps. That lives in the PMU RTL, and I proved it
+  formally.
+
+**Q28. How did you check the UPF without a UPF tool?**
+- By hand: `docs/UPF_REVIEW.md` pairs every UPF strategy with the RTL signal that implements it and
+  the check that verifies it.
+- It found that the power states must allow OFF wherever the mode table says RET, because a domain
+  already OFF stays OFF.
+- The file says plainly that no open-source checker exists.
+
+**Q29. Did the sky130 low-power cells survive the open flow?**
+Yes. LibreLane's sky130 config excludes the `lpflow_*` cells, but only from cells the tools *choose*.
+My 9 `lpflow_inputiso0p_1` isolation cells and 3 `dlclkp_1` ICGs are instantiated in the RTL and
+are all in the final netlist and layout.
+
+**Q30. Does the PMU close timing at every corner?**
+- At 20 ns, the first layout failed setup by 1.081 ns at the slow corner.
+- The one failing path carried 34 delay cells that the router's repair step used as buffers.
+- Excluding those cells from place-and-route gave +2.924 ns of slack at `max_ss` (58.56 MHz there),
+  with all 9 corners closed, less area (33,732.4 µm² of cells) and clean DRC, LVS and antenna.
+- I had found the same effect in my previous project but not tested it; here I measured it.
+
+**Q31. What is out of scope, and why?**
+- **No multi-domain power-gated layout:** the open flow cannot build real switched supplies,
+  power-switch cells or retention flops. Only the PMU (always-on logic) is laid out.
+- **No power-aware simulation:** domains are behavioural shells.
+- **UPF is not tool-checked.**

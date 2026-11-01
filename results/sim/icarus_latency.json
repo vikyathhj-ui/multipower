@@ -1,0 +1,24 @@
+{
+  "pclk_ns": 10,
+  "q_latency_cycles": 2,
+  "switch_latency_cycles": 4,
+  "delays": "register reset values",
+  "modes": {
+    "IDLE": {
+      "entry_cycles": 13,
+      "exit_cycles": 13
+    },
+    "SLEEP": {
+      "entry_cycles": 33,
+      "exit_cycles": 70
+    },
+    "DEEP_SLEEP": {
+      "entry_cycles": 33,
+      "exit_cycles": 94
+    },
+    "SHUTDOWN": {
+      "entry_cycles": 31,
+      "exit_cycles": 94
+    }
+  }
+}

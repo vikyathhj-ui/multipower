@@ -3,10 +3,8 @@
 Single source of truth for status. Update this before every commit.
 Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's default branch).
 
-**Current state (2026-11-01): Phase 3 gate passed with ONE OPEN ITEM (owner's choice: commit now).**
-PR for Phase 3 open; waiting for the owner. Open item: the formal cover RUN→SHUTDOWN→RUN is unreached
-up to step 77 (run stopped by a 2.5 h limit); options: split into two covers or a longer run.
-Phase 4 (UPF, break-even analysis, LibreLane on the PMU) next.
+**Current state (2026-11-01): Phase 4 complete; PR open.** PR #1 and #2 merged. Open item from Phase 3: the
+formal cover RUN→SHUTDOWN→RUN is unreached up to step 77. Phase 5 (README, docs, close) next.
 
 ## Phase 0 — Setup and audit
 - [x] Environment check (`scripts/env_check.sh` → `results/env_check.txt`): all tools found. The repo
@@ -54,12 +52,14 @@ Phase 4 (UPF, break-even analysis, LibreLane on the PMU) next.
 - [x] **Gate:** all tests pass, coverage met, all properties PROVEN; one cover open. Commit, PR.
 
 ## Phase 4 — UPF, power analysis, physical
-- [ ] `upf/pmu_soc.upf` with the honesty header; `docs/UPF_REVIEW.md`.
-- [ ] `analysis/breakeven.py` (named parameters), plots, `docs/POWER_ANALYSIS.md`.
-      PD_CPU load: P1 ALU netlist (owner to confirm the path).
-- [ ] LibreLane on the PMU (AON): area, timing at all corners, power → `summary.json`. Out-of-scope
-      items stated.
-- [ ] **Gate:** done. Commit, open PR.
+- [x] `upf/pmu_soc.upf` (IEEE 1801-2015) with the honesty header; `docs/UPF_REVIEW.md` cross-check.
+- [x] `analysis/breakeven.py` (named parameters), `results/plots/breakeven.png`, `docs/POWER_ANALYSIS.md`.
+      Representative load (owner's choice, D-014); mode latencies measured by `test_latency`.
+- [x] LibreLane on the PMU at 20 ns: closes all 9 corners after excluding delay cells from PnR
+      (D-016); DRC/LVS/antenna 0; `lpflow_inputiso0p_1` and `dlclkp_1` kept (D-015). Area, timing,
+      power in `results/summary.json`.
+- [x] Out-of-scope items stated (SPEC §11, POWER_ANALYSIS §6, INTERVIEW Q31).
+- [x] **Gate:** done. Commit.
 
 ## Phase 5 — Docs and close
 - [ ] README (pitch, block diagram, mode table, sequence diagram, generated results table,
