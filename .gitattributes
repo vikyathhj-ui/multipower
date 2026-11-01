@@ -3,3 +3,4 @@
 *.gds binary
 legacy/power_v3_sim binary
 legacy/power_v3.vcd -diff
+*.py linguist-detectable=false
