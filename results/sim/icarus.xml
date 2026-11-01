@@ -1,0 +1,6 @@
+<testsuites name="results">
+  <testsuite name="all" package="all">
+    <property name="random_seed" value="1793518603" />
+    <testcase name="test_smoke" classname="test_pmu" file="/foss/projects/multipower/tb/test_pmu.py" lineno="28" time="0.049001216888427734" sim_time_ns="1940.0" ratio_time="39590.853517316544" />
+  </testsuite>
+</testsuites>

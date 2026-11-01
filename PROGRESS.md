@@ -3,7 +3,16 @@
 Single source of truth for status. Update this before every commit.
 Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's default branch).
 
-**Current state (2026-11-01): Phase 2 (RTL) gate passed, committed locally. It will be pushed after PR #1 (Phases 0+1) is merged; Phase 3 (formal, then simulation) next.**
+**Current state (2026-11-01): Phase 3 IN PROGRESS (not at its gate).**
+Resume point:
+- Formal: properties 1-8 PROVEN (k-induction, `sby -f formal/pmu.sby prove`); property 9 PROVEN as
+  per-state bounds (`live` task). The cover task was started earlier but not collected; rerun with
+  `python3 scripts/run_formal.py` (it writes results/formal/summary.json). The RTL changed after the
+  last proof (target() loop for Icarus, D-012 to write), so rerun everything.
+- Simulation: tb/ (domain shells, env, coverage, 9 tests) all PASS with `--soak 200`; full 10^4 soak
+  not yet run. Next: `.venv/bin/python scripts/mutate.py` (mutation check, written, not yet run),
+  then the full run, coverage report, docs/VERIFICATION.md, DECISIONS D-012 (Icarus genvar/function
+  bug) and the unexplained `unique case` bound observation, CI workflow, `make verify`, commit, PR.
 
 ## Phase 0 — Setup and audit
 - [x] Environment check (`scripts/env_check.sh` → `results/env_check.txt`): all tools found. The repo

@@ -5,7 +5,8 @@
 // sequence in SPEC section 4; a sequence always runs to the stable state it started towards
 // (SPEC section 6, DECISIONS D-003.1), except for a deny (back to ON) or a FAULT.
 module pd_ctrl #(
-    parameter bit HAS_RET = 1'b1
+    parameter bit HAS_RET     = 1'b1,
+    parameter int SYNC_STAGES = 2      // latency of the ack synchronisers (sync_ff)
 ) (
     input  logic        clk,
     input  logic        rst_n,
@@ -95,6 +96,17 @@ module pd_ctrl #(
     logic [16:0] cnt1;
     assign cnt1 = cnt + 17'd1;
 
+    // An ack is trusted only SYNC_STAGES cycles after the step began (i.e. after the enable it
+    // answers changed): before that the synchroniser may still hold a value from before the
+    // change. Found by formal: results/formal_cex/cex01 (DECISIONS, "Bugs found by formal").
+    logic settled;
+    assign settled = (cnt >= 17'(SYNC_STAGES));
+    logic trk_on, trk_off, main_on, main_off;
+    assign trk_on   = settled &&  trickle_ack;
+    assign trk_off  = settled && !trickle_ack;
+    assign main_on  = settled &&  main_ack;
+    assign main_off = settled && !main_ack;
+
     // the delay of the current hold step
     logic [16:0] cur_dly;
     always_comb begin
@@ -118,10 +130,10 @@ module pd_ctrl #(
             D_QWAIT:    begin wait_q   = !(q_stopped || q_deny); wait_step = FAULT_STEP_QACCEPT_DOWN;   end
             D_DENY:     begin wait_q   = !q_run;                 wait_step = FAULT_STEP_QDENY_RELEASE;  end
             U_QEXIT:    begin wait_q   = !q_run;                 wait_step = FAULT_STEP_QACCEPT_UP;     end
-            D_MAIN_OFF: begin wait_psw = main_ack;               wait_step = FAULT_STEP_PSW_MAIN_OFF;   end
-            D_TRK_OFF:  begin wait_psw = trickle_ack;            wait_step = FAULT_STEP_PSW_TRICKLE_OFF; end
-            U_TRK_ON:   begin wait_psw = !trickle_ack;           wait_step = FAULT_STEP_PSW_TRICKLE_ON; end
-            U_MAIN_ON:  begin wait_psw = !main_ack;              wait_step = FAULT_STEP_PSW_MAIN_ON;    end
+            D_MAIN_OFF: begin wait_psw = !main_off;              wait_step = FAULT_STEP_PSW_MAIN_OFF;   end
+            D_TRK_OFF:  begin wait_psw = !trk_off;               wait_step = FAULT_STEP_PSW_TRICKLE_OFF; end
+            U_TRK_ON:   begin wait_psw = !trk_on;                wait_step = FAULT_STEP_PSW_TRICKLE_ON; end
+            U_MAIN_ON:  begin wait_psw = !main_on;               wait_step = FAULT_STEP_PSW_MAIN_ON;    end
             default: ;
         endcase
     end
@@ -282,14 +294,14 @@ module pd_ctrl #(
                     st          <= D_MAIN_OFF;
                 end
                 D_MAIN_OFF: begin
-                    if (!main_ack) begin
+                    if (main_off) begin
                         psw_trickle_en <= 1'b0;         // step 7b: then trickle
                         cnt            <= '0;
                         st             <= D_TRK_OFF;
                     end
                 end
                 D_TRK_OFF: begin
-                    if (!trickle_ack) begin             // step 8: switched off
+                    if (trk_off) begin             // step 8: switched off
                         if (seq_tgt == T_RET && HAS_RET) st <= S_RET;
                         else begin
                             ret_valid <= 1'b0;
@@ -305,7 +317,7 @@ module pd_ctrl #(
                     st             <= U_TRK_ON;
                 end
                 U_TRK_ON: begin
-                    if (trickle_ack) begin
+                    if (trk_on) begin
                         hcnt <= hcnt + 16'd1;
                         if ({1'b0, hcnt} + 17'd1 >= dly(dly_trickle)) begin
                             psw_main_en <= 1'b1;        // step 3, after DLY_TRICKLE (property 4)
@@ -318,7 +330,7 @@ module pd_ctrl #(
                     end
                 end
                 U_MAIN_ON: begin
-                    if (main_ack) begin
+                    if (main_on) begin
                         hcnt <= hcnt + 16'd1;
                         if ({1'b0, hcnt} + 17'd1 >= dly(dly_main)) begin
                             inrush_req_q <= 1'b0;       // end of the switching phase: release

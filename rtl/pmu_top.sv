@@ -108,6 +108,13 @@ module pmu_top #(
 
     inrush_arb #(.N(N_PD)) u_arb (.clk(PCLK), .rst_n(rstn), .req(inrush_req), .gnt(inrush_gnt));
 
+    // Per-domain targets, computed in a loop rather than by calling target() with the genvar in
+    // a port connection: Icarus then stops treating the genvar as a constant (DECISIONS D-012).
+    logic [1:0] tgt [N_PD];
+    always_comb begin
+        for (int i = 0; i < N_PD; i++) tgt[i] = target(mode_req, i);
+    end
+
     for (genvar d = 0; d < N_PD; d++) begin : g_pd
         // isolation on every signal coming out of the switchable domain (clamp 0: Q_STOPPED)
         iso_wrap #(.CLAMP(1'b0)) u_iso_acc  (.d(QACCEPTn[d]), .iso_en(iso_en[d]), .q(qacc_iso[d]));
@@ -125,8 +132,8 @@ module pmu_top #(
             .qacceptn(qacc_s[d]), .qdeny(qdeny_s[d]), .qreqn(QREQn[d]),
             .q_run(q_run[d]), .q_stopped(q_stopped[d]));
 
-        pd_ctrl #(.HAS_RET(HAS_RET[d])) u_pd (
-            .clk(PCLK), .rst_n(rstn), .tgt(target(mode_req, d)), .arm(arm), .fault_clr(fault_clr),
+        pd_ctrl #(.HAS_RET(HAS_RET[d]), .SYNC_STAGES(SYNC_STAGES)) u_pd (
+            .clk(PCLK), .rst_n(rstn), .tgt(tgt[d]), .arm(arm), .fault_clr(fault_clr),
             .dly_trickle(dly_trickle), .dly_main(dly_main), .dly_clk(dly_clk), .dly_iso(dly_iso),
             .dly_ret(dly_ret), .dly_rst(dly_rst), .tmo_qch(tmo_qch), .tmo_psw(tmo_psw),
             .trickle_ack(trk_s[d]), .main_ack(main_s[d]),
@@ -175,8 +182,8 @@ module pmu_top #(
     assign mode_status = {21'd0, mismatch, sys_fault, sys_busy, 5'd0, mode_cur};
     always_comb begin
         pd_state_reg = '0;
-        for (int d = 0; d < N_PD && d < 4; d++) begin
-            pd_state_reg[8*d +: 5] = {ret_valid[d], busy[d], pd_state[d]};
+        for (int d = 0; d < N_PD; d++) begin
+            if (d < 4) pd_state_reg[8*d +: 5] = {ret_valid[d], busy[d], pd_state[d]};   // 4 fit in 32 bits
         end
     end
 
