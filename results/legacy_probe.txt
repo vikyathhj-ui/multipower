@@ -1,0 +1,104 @@
+# Legacy probe (2026-11-01T06:29Z), Icarus Verilog version 14.0 (devel) (s20260301-391-g64f13540-dirty)
+
+## L1. Legacy testbench as shipped (legacy/tb_power_v3.v), run in Icarus
+  PASS | _domain_active=0               | measured=0
+  PASS | dsp_active=0                   | measured=0
+  PASS | mem_active=0                   | measured=0
+  PASS | dsp_state=OFF                  | measured=0
+  PASS | mem_state=OFF                  | measured=0
+  PASS | dsp_state=WAKING               | measured=1
+  PASS | en=1 during wake               | measured=0
+  PASS | dsp_active=1                   | measured=1
+  PASS | dsp_state=ON                   | measured=2
+  PASS | ake_latency=12cy               | measured=12
+  PASS | iso_en=0 when ON               | measured=0
+  PASS | gate_n=1 when ON               | measured=0
+  PASS | transitions>=1                 | measured=1
+  PASS | fe=1 (staggered)               | measured=1
+  PASS | s match required               | measured=34
+  PASS | l_shifters match               | measured=33
+  PASS | t regs=36 (32+4)               | measured=36
+  PASS |  regs=8 (ptr×2)               | measured=8
+  PASS | dsp_state=SLEEP                | measured=3
+  PASS | ntion_restore=OK               | measured=1
+  PASS | e_transitions>=1               | measured=1
+  INFO | Power all-ON       : 4.98 mW
+  INFO | Power gated (AON)  : 1.20 mW
+  INFO | Leakage reduction  : 75.9 %
+  INFO | Power gating eff.  : 75.9 %
+  PASS | ge_reduction>50%               | measured=75
+  PASS | ed_power_on=safe               | measured=1
+  PASS | p_transitions>=2               | measured=3
+  Leakage reduction        : 75.9%                 
+  Retention restore        : PASS               
+  TEST RESULTS: 24 PASS / 0 FAIL                   
+
+## L2. What the PASS lines compare (check_metric calls in legacy/tb_power_v3.v)
+check_metric calls: 24 (the task definition has no parenthesis, so these are all calls)
+87:    successful_transitions=0; corruption_free=0;
+89:    iso_cells_required=34; iso_cells_inserted=34;
+90:    ls_required=33; ls_inserted=33;
+141:    successful_transitions = successful_transitions + 1;
+171:    check_metric(iso_cells_inserted==iso_cells_required,
+183:    check_metric(ls_inserted==ls_required,
+216:    corruption_free = corruption_free + 1;
+226:    power_all_on  = 4.98; // mW (from our earlier measurement)
+227:    power_gated   = 1.20; // mW (only AON active)
+RTL constants reported as measurements:
+legacy/src/dsp_domain_v3.v:44:always @(posedge clk) retained_reg_count <= 8'd36;
+legacy/src/mem_domain_v3.v:44:    if (rst) retained_reg_count <= 8'd8;
+legacy/src/mem_domain_v3.v:45:    else     retained_reg_count <= 8'd8;
+restore_success compares two copies written by the same save:
+51:        ret_result      <= 0;
+52:        pre_sleep_result<= 0;
+58:        ret_result       <= result_reg;
+59:        pre_sleep_result <= result_reg;
+62:        restore_success  <= (ret_result == pre_sleep_result);
+
+## L3. Sequencing is a timer, with no acknowledge inputs
+power_manager_v3 inputs:
+2:    input        clk,
+3:    input        rst,
+4:    input        enable_dsp,
+5:    input        enable_mem,
+timer compares:
+67:                if (dsp_cnt == 8'd4)
+69:                if (dsp_cnt == 8'd8)
+71:                if (dsp_cnt == 8'd12) begin
+92:                if (dsp_cnt == 8'd2)
+94:                if (dsp_cnt == 8'd6) begin
+98:                if (dsp_cnt == 8'd10) begin
+136:                if (mem_cnt == 8'd4)
+138:                if (mem_cnt == 8'd8)
+140:                if (mem_cnt == 8'd12) begin
+160:                if (mem_cnt == 8'd2)
+162:                if (mem_cnt == 8'd6) begin
+166:                if (mem_cnt == 8'd10) begin
+
+## L4. 'Level shifters' and isolation cells
+6:    assign data_out = data_in & ~iso_en;
+14:    assign data_out = data_in | iso_en;
+22:    assign data_out = iso_en ? 32'h0 : data_in;
+31:    assign data_out = data_in;
+38:    assign data_out = data_in;
+instances in top_power_v3.v:
+106:iso_bus32 u_iso_result (
+112:iso_and u_iso_valid (
+126:level_shifter_bus32 u_ls_result (
+131:level_shifter_HL u_ls_valid (
+isolation inside the switchable MEM domain (powered off with it):
+39:assign mem_out    = iso_en ? 32'h0 : rd_data;
+40:assign buffer_full= iso_en ? 1'b0  : full_reg;
+41:assign fill_level = iso_en ? 4'h0  : {1'b0, wr_ptr} - {1'b0, rd_ptr};
+retention_ff instantiated anywhere: 0 file(s)
+
+## L5. Audit probe (legacy/tb_probe.v): timer sequencing and inrush overlap
+PROBE P1: power_gate_n rises 6 cycles after enable
+PROBE P1: restore pulse    10 cycles after enable
+PROBE P1: iso_en falls     14 cycles after enable
+PROBE P1: power_gate_n rises 6 cycles after enable
+PROBE P1: restore pulse    10 cycles after enable
+PROBE P1: iso_en falls     14 cycles after enable
+PROBE P2: cycles with DSP and MEM both in WAKE (power-up switching) = 12
+PROBE P2: of those, cycles with inrush_safe=1 = 12
+PROBE P2: final inrush_safe = 1 (set once in MEM OFF->WAKE, cleared only by reset)

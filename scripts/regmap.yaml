@@ -1,0 +1,206 @@
+# Single source of the PMU register map (docs/BRIEF.md A2).
+# scripts/gen_regmap.py turns this into docs/REGMAP.md, sw/pmu_regs.h and tb/regmap.py,
+# and the RTL register block (Phase 2) is checked against it.
+#
+# access: RO (read-only), RW (read/write), W1C (write 1 to clear; reads return status).
+# Fields: name, bits [msb, lsb], reset value, description. Unlisted bits read 0, writes ignored.
+# Any address not listed here returns PSLVERR=1 (IHI 0024E §3.4).
+
+device: pmu
+data_width: 32
+addr_width: 12
+n_pd: 3
+domains: [CPU, DSP, PERI]          # index 0, 1, 2; arbiter priority CPU > DSP > PERI
+
+enums:
+  mode:                            # MODE_REQ / WAKE_MODE / MODE_STATUS.MODE encoding
+    RUN: 0
+    IDLE: 1
+    SLEEP: 2
+    DEEP_SLEEP: 3
+    SHUTDOWN: 4
+  pd_state:                        # PD_STATE per-domain field encoding
+    ON: 0
+    CLK_GATED: 1
+    RET: 2
+    OFF: 3
+    FAULT: 7                       # 4-6: transitional (PD_STATE.BUSY=1 while in a sequence)
+  fault_step:                      # FAULT_INFO.STEP: the wait step that timed out
+    QACCEPT_DOWN: 1                # waiting for QACCEPTn=0 (or QDENY=1) after QREQn=0
+    QDENY_RELEASE: 2               # waiting for QDENY=0 after QREQn=1 following a deny
+    PSW_MAIN_OFF: 3                # waiting for psw_main_ack=0
+    PSW_TRICKLE_OFF: 4             # waiting for psw_trickle_ack=0
+    PSW_TRICKLE_ON: 5              # waiting for psw_trickle_ack=1
+    PSW_MAIN_ON: 6                 # waiting for psw_main_ack=1
+    QACCEPT_UP: 7                  # waiting for QACCEPTn=1 after QREQn=1 (Q_EXIT)
+
+registers:
+  - name: ID
+    addr: 0x000
+    access: RO
+    desc: Peripheral identification.
+    fields:
+      - {name: ID, bits: [31, 0], reset: 0x504D5530, desc: 'ASCII "PMU0".'}
+
+  - name: VERSION
+    addr: 0x004
+    access: RO
+    desc: Register-map version.
+    fields:
+      - {name: MAJOR, bits: [31, 16], reset: 1, desc: Incremented on incompatible map changes.}
+      - {name: MINOR, bits: [15, 0], reset: 0, desc: Incremented on compatible additions.}
+
+  - name: MODE_REQ
+    addr: 0x008
+    access: RW
+    desc: >-
+      Requested system mode. A write starts a transition; the newest request is the target. Values
+      5-7 are not a mode: the write is ignored and PSLVERR=1. Hardware also writes this register on
+      a wake event (WAKE_MODE is copied in). Reset value RUN: after PMU reset every domain is OFF,
+      so the PMU powers them all up (boot).
+    fields:
+      - {name: MODE, bits: [2, 0], reset: 0, enum: mode, desc: Target mode.}
+
+  - name: MODE_STATUS
+    addr: 0x00C
+    access: RO
+    desc: Current system status.
+    fields:
+      - {name: MODE, bits: [2, 0], reset: 4, enum: mode, desc: 'Last mode reached in full (every domain at its target). Reset: SHUTDOWN (all domains OFF).'}
+      - {name: BUSY, bits: [8, 8], reset: 0, desc: 'A transition is in progress (some domain is not at its target).'}
+      - {name: FAULT, bits: [9, 9], reset: 0, desc: 'At least one domain is in FAULT.'}
+      - {name: MISMATCH, bits: [10, 10], reset: 0, desc: 'Not busy, but some domain is not at the target of MODE_REQ (a deny left it in place).'}
+
+  - name: PD_STATE
+    addr: 0x010
+    access: RO
+    desc: Per-domain state, 8 bits per domain d at bits [8d+7:8d]. Reset - every domain OFF.
+    fields:
+      - {name: CPU_STATE, bits: [2, 0], reset: 3, enum: pd_state, desc: PD_CPU stable state.}
+      - {name: CPU_BUSY, bits: [3, 3], reset: 0, desc: PD_CPU is in a sequence.}
+      - {name: CPU_RET_VALID, bits: [4, 4], reset: 0, desc: PD_CPU retention flops hold saved state.}
+      - {name: DSP_STATE, bits: [10, 8], reset: 3, enum: pd_state, desc: PD_DSP stable state.}
+      - {name: DSP_BUSY, bits: [11, 11], reset: 0, desc: PD_DSP is in a sequence.}
+      - {name: DSP_RET_VALID, bits: [12, 12], reset: 0, desc: PD_DSP retention flops hold saved state.}
+      - {name: PERI_STATE, bits: [18, 16], reset: 3, enum: pd_state, desc: PD_PERI stable state.}
+      - {name: PERI_BUSY, bits: [19, 19], reset: 0, desc: PD_PERI is in a sequence.}
+
+  - name: WAKE_MODE
+    addr: 0x014
+    access: RW
+    desc: Mode entered on a wake event. Values 5-7 are ignored with PSLVERR=1.
+    fields:
+      - {name: MODE, bits: [2, 0], reset: 0, enum: mode, desc: Wake target mode.}
+
+  - name: WAKE_MASK
+    addr: 0x018
+    access: RW
+    desc: Per-source wake mask. A source wakes the system only when its mask bit is 0.
+    fields:
+      - {name: MASK, bits: [7, 0], reset: 0xFF, desc: '1 = wake_irq[i] ignored. Reset: all masked.'}
+
+  - name: WAKE_TIMER_CMP
+    addr: 0x01C
+    access: RW
+    desc: Wake-timer compare value.
+    fields:
+      - {name: CMP, bits: [31, 0], reset: 0xFFFFFFFF, desc: 'A wake event fires when WAKE_TIMER reaches CMP while enabled.'}
+
+  - name: WAKE_TIMER
+    addr: 0x020
+    access: RO
+    desc: AON wake-timer count (PMU clock cycles since the timer was enabled).
+    fields:
+      - {name: COUNT, bits: [31, 0], reset: 0, desc: Counts up while WAKE_CTRL.TIMER_EN=1; cleared when TIMER_EN is written 1.}
+
+  - name: WAKE_CTRL
+    addr: 0x024
+    access: RW
+    desc: Wake-timer control.
+    fields:
+      - {name: TIMER_EN, bits: [0, 0], reset: 0, desc: 'Writing 1 clears WAKE_TIMER and starts it. Hardware clears this bit when the compare fires (one-shot).'}
+
+  - name: DLY_TRICKLE
+    addr: 0x040
+    access: RW
+    desc: Cycles psw_trickle_ack must stay high before psw_main_en rises (inrush staging, property 4).
+    fields:
+      - {name: CYCLES, bits: [15, 0], reset: 8, desc: '0 is treated as 1.'}
+
+  - name: DLY_MAIN
+    addr: 0x044
+    access: RW
+    desc: Cycles psw_main_ack must stay high before the next power-up step.
+    fields:
+      - {name: CYCLES, bits: [15, 0], reset: 4, desc: '0 is treated as 1.'}
+
+  - name: DLY_CLK
+    addr: 0x048
+    access: RW
+    desc: Cycles held after a clk_en change before the next step.
+    fields:
+      - {name: CYCLES, bits: [15, 0], reset: 2, desc: '0 is treated as 1.'}
+
+  - name: DLY_ISO
+    addr: 0x04C
+    access: RW
+    desc: Cycles held after iso_en rises before the next step.
+    fields:
+      - {name: CYCLES, bits: [15, 0], reset: 2, desc: '0 is treated as 1.'}
+
+  - name: DLY_RET
+    addr: 0x050
+    access: RW
+    desc: Width of the ret_save / ret_restore pulse in cycles.
+    fields:
+      - {name: CYCLES, bits: [15, 0], reset: 2, desc: '0 is treated as 1.'}
+
+  - name: DLY_RST
+    addr: 0x054
+    access: RW
+    desc: Cycles held after an rst_n change before the next step.
+    fields:
+      - {name: CYCLES, bits: [15, 0], reset: 2, desc: '0 is treated as 1.'}
+
+  - name: TMO_QCH
+    addr: 0x060
+    access: RW
+    desc: Maximum cycles to wait for any Q-Channel response.
+    fields:
+      - {name: CYCLES, bits: [15, 0], reset: 256, desc: 'Timeout leads to FAULT. 0 = 65536.'}
+
+  - name: TMO_PSW
+    addr: 0x064
+    access: RW
+    desc: Maximum cycles to wait for any power-switch acknowledge.
+    fields:
+      - {name: CYCLES, bits: [15, 0], reset: 256, desc: 'Timeout leads to FAULT. 0 = 65536.'}
+
+  - name: IRQ_STATUS
+    addr: 0x080
+    access: W1C
+    desc: Interrupt status. A bit sets on its event; writing 1 clears it. irq = |(IRQ_STATUS & IRQ_EN).
+    fields:
+      - {name: DONE, bits: [0, 0], reset: 0, desc: A transition finished with every domain at its target.}
+      - {name: DENY, bits: [1, 1], reset: 0, desc: A domain denied a quiescence request (Q_DENIED); it stayed in place.}
+      - {name: FAULT, bits: [2, 2], reset: 0, desc: 'A wait step timed out (details in FAULT_INFO). Clearing it releases FAULT domains to OFF.'}
+      - {name: WAKE, bits: [3, 3], reset: 0, desc: A wake event (unmasked wake_irq or timer compare) occurred.}
+
+  - name: IRQ_EN
+    addr: 0x084
+    access: RW
+    desc: Interrupt enables, same bit layout as IRQ_STATUS.
+    fields:
+      - {name: DONE, bits: [0, 0], reset: 0, desc: ''}
+      - {name: DENY, bits: [1, 1], reset: 0, desc: ''}
+      - {name: FAULT, bits: [2, 2], reset: 1, desc: ''}
+      - {name: WAKE, bits: [3, 3], reset: 0, desc: ''}
+
+  - name: FAULT_INFO
+    addr: 0x088
+    access: RO
+    desc: First fault since IRQ_STATUS.FAULT was last cleared.
+    fields:
+      - {name: DOMAIN, bits: [1, 0], reset: 0, desc: Domain index (0 CPU, 1 DSP, 2 PERI).}
+      - {name: STEP, bits: [6, 4], reset: 0, enum: fault_step, desc: The wait step that timed out.}
+      - {name: VALID, bits: [31, 31], reset: 0, desc: FAULT_INFO holds a fault.}
