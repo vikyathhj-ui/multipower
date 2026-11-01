@@ -3,7 +3,7 @@
 Single source of truth for status. Update this before every commit.
 Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's default branch).
 
-**Current state (2026-11-01): Phase 1 spec written, WAITING FOR THE OWNER'S REVIEW. No RTL until confirmed.**
+**Current state (2026-11-01): Phase 1 spec CONFIRMED by the owner (DECISIONS D-003). Phase 0+1 PR open; Phase 2 (RTL) in progress.**
 
 ## Phase 0 — Setup and audit
 - [x] Environment check (`scripts/env_check.sh` → `results/env_check.txt`): all tools found. The repo
@@ -15,7 +15,7 @@ Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's def
       sequencing CONFIRMED, tautological checks CONFIRMED (14 of 24), hard-coded 4.98 mW CONFIRMED;
       plus a demonstrated inrush violation.
 - [x] Commit and push `rework/pmu`.
-- [ ] PR for Phase 0 (opened together with Phase 1's, after the owner's spec review).
+- [x] PR for Phase 0 (opened together with Phase 1's, after the owner's spec review).
 
 ## Phase 1 — Spec
 - [x] ARM IHI 0024E (APB) and IHI 0068D (LPI) read from Arm's documentation service; section and page
@@ -25,7 +25,7 @@ Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's def
       interfaces; 6 WaveDrom diagrams (`scripts/check_wavedrom.py` checks them).
 - [x] `scripts/regmap.yaml` → `scripts/gen_regmap.py` → `docs/REGMAP.md`, `sw/pmu_regs.h`,
       `tb/regmap.py` (`--check` for staleness; the header compiles with gcc).
-- [ ] **Gate:** owner reviews and confirms the spec before any RTL. Commit, push, open PR.
+- [x] **Gate:** owner confirmed the spec (all 10 [decision] items, D-003). Commit, push, open PR.
 
 ## Phase 2 — RTL
 - [ ] `rtl/pmu_top.sv`, `apb_regs.sv`, `pd_ctrl.sv` (× `N_PD`), `qch_master.sv`, `inrush_arb.sv`,
