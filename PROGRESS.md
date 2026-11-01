@@ -3,7 +3,7 @@
 Single source of truth for status. Update this before every commit.
 Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's default branch).
 
-**Current state (2026-11-01): Phase 0 complete; Phase 1 (spec) next.**
+**Current state (2026-11-01): Phase 1 spec written, WAITING FOR THE OWNER'S REVIEW. No RTL until confirmed.**
 
 ## Phase 0 — Setup and audit
 - [x] Environment check (`scripts/env_check.sh` → `results/env_check.txt`): all tools found. The repo
@@ -18,11 +18,13 @@ Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's def
 - [ ] PR for Phase 0 (opened together with Phase 1's, after the owner's spec review).
 
 ## Phase 1 — Spec
-- [ ] Arm IHI 0024 (APB) and IHI 0068 (LPI Q-Channel) accessed, with section numbers cited (or
-      marked "to verify against IHI 0068").
-- [ ] `docs/SPEC.md`: domains, states, modes, sequences, delays and timeouts, inrush rule, wake-up,
-      interfaces; WaveDrom for every power-down and power-up sequence.
-- [ ] `scripts/regmap.yaml` → generator → `docs/REGMAP.md`, `sw/pmu_regs.h`, `tb/regmap.py`.
+- [x] ARM IHI 0024E (APB) and IHI 0068D (LPI) read from Arm's documentation service; section and page
+      numbers cited in SPEC (§2.1, §3.1, §3.3, §3.4, §4.1 of 0024E; §2.1.1–§2.1.4 and Table 2-1 of
+      0068D). The PDFs are not committed.
+- [x] `docs/SPEC.md`: domains, states, modes, sequences, delays and timeouts, inrush rule, wake-up,
+      interfaces; 6 WaveDrom diagrams (`scripts/check_wavedrom.py` checks them).
+- [x] `scripts/regmap.yaml` → `scripts/gen_regmap.py` → `docs/REGMAP.md`, `sw/pmu_regs.h`,
+      `tb/regmap.py` (`--check` for staleness; the header compiles with gcc).
 - [ ] **Gate:** owner reviews and confirms the spec before any RTL. Commit, push, open PR.
 
 ## Phase 2 — RTL
