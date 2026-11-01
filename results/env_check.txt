@@ -1,0 +1,70 @@
+ITEM             STATUS   VERSION / PATH
+iverilog         found    Icarus Verilog version 14.0 (devel) (s20260301-391-g64f13540-dirty) (/foss/tools/bin/iverilog)
+verilator        found    Verilator 5.050 2026-07-01 rev v5.050 (/foss/tools/bin/verilator)
+yosys            found    Yosys 0.68 (git sha1 38e001a6f, Release, GNU /usr/bin/c++ 13.3.0) (/foss/tools/bin/yosys)
+yosys-slang      found    read_slang available
+sby              found    symbiyosys (/foss/tools/bin/sby)
+yosys-smtbmc     found    yosys-smtbmc (/foss/tools/bin/yosys-smtbmc)
+z3               absent   -
+boolector        absent   -
+yices-smt2       found    Yices 2.7.0
+bitwuzla         absent   -
+python3          found    Python 3.12.3 (/usr/bin/python3)
+cocotb           found    2.0.1 (/foss/projects/multipower/.venv/bin/python)
+cocotb-coverage  found    2.0 (/foss/projects/multipower/.venv/bin/python)
+librelane        found    3.1.0.dev3 (/foss/tools/bin/librelane)
+openroad         found    26Q3-1621-g21512b0ab  (/foss/tools/bin/openroad)
+sta              found    3.1.0 (/foss/tools/bin/sta)
+magic            found    8.3.681 (/foss/tools/bin/magic)
+netgen           found    Netgen 1.5.323 compiled on Tue Aug 25 11:33:45 AM CEST 2026 (/foss/tools/bin/netgen)
+klayout          found    KLayout 0.30.11 (/foss/tools/klayout/klayout)
+sky130A PDK      found    /foss/pdks/sky130A (PDK=sky130A)
+liberty (tt)     found    /foss/pdks/sky130A/libs.ref/sky130_fd_sc_hd/lib/sky130_fd_sc_hd__tt_025C_1v80.lib
+
+sky130_fd_sc_hd cells relevant to the PMU (from the tt liberty):
+  sky130_fd_sc_hd__dlclkp_1
+  sky130_fd_sc_hd__dlclkp_2
+  sky130_fd_sc_hd__dlclkp_4
+  sky130_fd_sc_hd__lpflow_bleeder_1
+  sky130_fd_sc_hd__lpflow_clkbufkapwr_1
+  sky130_fd_sc_hd__lpflow_clkbufkapwr_16
+  sky130_fd_sc_hd__lpflow_clkbufkapwr_2
+  sky130_fd_sc_hd__lpflow_clkbufkapwr_4
+  sky130_fd_sc_hd__lpflow_clkbufkapwr_8
+  sky130_fd_sc_hd__lpflow_clkinvkapwr_1
+  sky130_fd_sc_hd__lpflow_clkinvkapwr_16
+  sky130_fd_sc_hd__lpflow_clkinvkapwr_2
+  sky130_fd_sc_hd__lpflow_clkinvkapwr_4
+  sky130_fd_sc_hd__lpflow_clkinvkapwr_8
+  sky130_fd_sc_hd__lpflow_decapkapwr_12
+  sky130_fd_sc_hd__lpflow_decapkapwr_3
+  sky130_fd_sc_hd__lpflow_decapkapwr_4
+  sky130_fd_sc_hd__lpflow_decapkapwr_6
+  sky130_fd_sc_hd__lpflow_decapkapwr_8
+  sky130_fd_sc_hd__lpflow_inputiso0n_1
+  sky130_fd_sc_hd__lpflow_inputiso0p_1
+  sky130_fd_sc_hd__lpflow_inputiso1n_1
+  sky130_fd_sc_hd__lpflow_inputiso1p_1
+  sky130_fd_sc_hd__lpflow_inputisolatch_1
+  sky130_fd_sc_hd__lpflow_isobufsrc_1
+  sky130_fd_sc_hd__lpflow_isobufsrc_16
+  sky130_fd_sc_hd__lpflow_isobufsrc_2
+  sky130_fd_sc_hd__lpflow_isobufsrc_4
+  sky130_fd_sc_hd__lpflow_isobufsrc_8
+  sky130_fd_sc_hd__lpflow_isobufsrckapwr_16
+  sky130_fd_sc_hd__lpflow_lsbuf_lh_hl_isowell_tap_1
+  sky130_fd_sc_hd__lpflow_lsbuf_lh_hl_isowell_tap_2
+  sky130_fd_sc_hd__lpflow_lsbuf_lh_hl_isowell_tap_4
+  sky130_fd_sc_hd__lpflow_lsbuf_lh_isowell_4
+  sky130_fd_sc_hd__lpflow_lsbuf_lh_isowell_tap_1
+  sky130_fd_sc_hd__lpflow_lsbuf_lh_isowell_tap_2
+  sky130_fd_sc_hd__lpflow_lsbuf_lh_isowell_tap_4
+  sky130_fd_sc_hd__sdlclkp_1
+  sky130_fd_sc_hd__sdlclkp_2
+  sky130_fd_sc_hd__sdlclkp_4
+
+LibreLane exclusion lists matching dlclkp/lpflow (cells listed here are dont_use in that step):
+  synth_excluded.cells:sky130_fd_sc_hd__lpflow_*
+  pnr_excluded.cells:sky130_fd_sc_hd__lpflow_*
+
+RESULT: all required tools found
