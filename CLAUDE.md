@@ -62,3 +62,13 @@ docker exec -w /foss/projects/multipower iic-osic bash -lc '<command>'
   `sky130_fd_sc_hd__lpflow_inputiso{0,1}{p,n}_1` exist in the liberty, but LibreLane excludes
   `sky130_fd_sc_hd__lpflow_*` from synthesis and PnR by default. See DECISIONS before relying on them.
 - `make` exists only in the container, not on the host.
+
+## Commands (all inside the container, from the repo root)
+- `make lint`, `make docs-check`, `make sim` (10⁴ soak), `make sim-ci`, `make formal` (prove, live,
+  cover; the cover task is slow), `make formal-ci`, `make mutation`, `make verify`.
+- `make flow` (LibreLane, tag `pmu_T20_nodly`), `make breakeven`, `make summary`, `make readme`,
+  `make readme-check`, `make bullets`; `make all` runs everything.
+- `results/summary.json` is built by `scripts/parse_flow.py` and is the only source of numbers for the
+  README (`scripts/gen_readme_table.py`) and `results/resume_bullets.md`.
+- When stopping a long run, kill by PID inside the container; never delete runs (move them aside).
+- Formal counterexamples: `python3 scripts/cex_table.py <trace.vcd> <signal patterns...>`.

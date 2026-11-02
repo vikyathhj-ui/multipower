@@ -92,6 +92,7 @@
       "proofs": "PASS",
       "covers": "INCOMPLETE",
       "covers_reached": 17,
+      "covers_total": 18,
       "tasks": {
         "prove": "PASS",
         "live": "PASS",
@@ -102,9 +103,7 @@
     "mutation": {
       "result": "PASS",
       "mutants": 12,
-      "missed": [
-        "control"
-      ],
+      "missed": [],
       "source": "results/mutation.json"
     }
   }

@@ -8,7 +8,7 @@ PY ?= .venv/bin/python
 
 .PHONY: help env regmap regmap-check wavedrom-check lint legacy-probe docs-check sim sim-ci \
         formal formal-ci mutation verify verify-summary \
-        flow breakeven summary clean
+        flow breakeven summary readme readme-check bullets reports all clean
 
 help:
 	@echo "make env            tool table -> results/env_check.txt"
@@ -25,6 +25,9 @@ help:
 	@echo "make flow           LibreLane on the PMU (AON logic), flow/config.json -> flow/runs/pmu_T20_nodly"
 	@echo "make breakeven      break-even analysis -> results/power/breakeven.json, results/plots/breakeven.png"
 	@echo "make summary        results/summary.json from all results"
+	@echo "make readme         README results block from summary.json (readme-check: fail if stale)"
+	@echo "make bullets        results/resume_bullets.md from summary.json"
+	@echo "make all            everything: verify -> flow -> breakeven -> summary -> README -> bullets"
 	@echo "make legacy-probe   audit evidence for docs/AUDIT.md -> results/legacy_probe.txt"
 	@echo "make clean          remove sim_build/"
 
@@ -74,6 +77,20 @@ breakeven:
 
 summary:
 	python3 scripts/parse_flow.py --tag pmu_T20_nodly
+
+readme:
+	python3 scripts/gen_readme_table.py
+
+readme-check:
+	python3 scripts/gen_readme_table.py --check
+
+bullets:
+	python3 scripts/resume_bullets.py
+
+reports: summary readme bullets
+
+# BRIEF A5 "make all". The formal cover task and the mutation check are the slow steps.
+all: verify flow breakeven reports
 
 legacy-probe:
 	scripts/legacy_probe.sh

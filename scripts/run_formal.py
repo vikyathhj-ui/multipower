@@ -51,7 +51,9 @@ def parse(task: str) -> dict:
         reached = sorted(set(re.findall(r"Reached cover statement in step \d+ at pmu_top: (\S+)", log)))
         unreached = sorted(set(re.findall(r"Unreached cover statement at pmu_top: (\S+)", log)))
         steps = re.findall(r"Checking cover reachability in step (\d+)", log)
-        rec.update({"reached": len(reached), "unreached": unreached, "reached_list": reached})
+        prep = d / "model" / "design_prep.il"
+        total = prep.read_text(errors="replace").count("cell $cover") if prep.exists() else None
+        rec.update({"reached": len(reached), "total": total, "unreached": unreached, "reached_list": reached})
         if status == "MISSING" and steps:
             # the run was stopped before SBY finished: covers not reached are open, checked only
             # up to the last completed step

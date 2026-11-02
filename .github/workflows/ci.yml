@@ -45,6 +45,9 @@ jobs:
       - name: Generated register map and timing diagrams are current
         run: make PY=python docs-check
 
+      - name: README results match results/summary.json
+        run: make PY=python readme-check
+
       - name: Lint (verilator -Wall, 4 configurations)
         run: make PY=python lint
 

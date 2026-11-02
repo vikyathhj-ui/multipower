@@ -27,6 +27,7 @@
       "status": "INCOMPLETE",
       "source": "results/formal/cover_logfile.txt",
       "reached": 17,
+      "total": 18,
       "unreached": [],
       "reached_list": [
         "u_props.g_d[0].c_cg",

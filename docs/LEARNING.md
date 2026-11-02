@@ -84,3 +84,35 @@ Notes in my own words, phase by phase. Decisions are in `docs/DECISIONS.md`; num
   isolation shows X immediately.
 - **Retention** is modelled as a shadow copy that survives power-off. The checker compares the
   restored value with what was there at `ret_save`.
+
+## Phase 4 — UPF, power analysis, layout
+
+### What UPF adds to RTL
+- **RTL assumes every gate is always powered.** UPF describes the power architecture: domains,
+  supplies, switches, isolation (clamp values, which side), retention (save/restore signals) and
+  the legal power states.
+- **UPF says *what*, not *when*.** The ordering of the steps is in the PMU, and that is what I
+  proved formally.
+- **A hand review still finds things:** the power states had to allow OFF wherever the mode table
+  says RET.
+
+### Break-even residency
+- **A mode only saves energy if you stay long enough** to pay back the cost of entering and
+  leaving it. That cost is small for clock gating (about 2 nJ here) and larger for power gating.
+- **Temperature dominates leakage:** sky130's average cell leaks about 3000× more at 100 °C than at
+  25 °C. The same SoC should choose modes differently when hot.
+- **Be careful what you count as overhead:** an always-on block's power is paid in every mode, so
+  charging it all to transitions is only an upper bound.
+
+### The open flow
+- **The tools pick cells you did not ask for:** the router's repair step used slow delay cells as
+  buffers, costing 4 ns. Excluding them closed timing at every corner, with less area.
+- **Read the cells on the critical path, not only the slack.**
+- **A config default can be silently wrong:** LibreLane passed `-threads None`, so OpenROAD ran on
+  one thread.
+
+## Phase 5 — Close
+- **Every number in the README is regenerated from `results/summary.json`** by a script, and CI fails
+  if it is stale. Copying numbers by hand is how the original project ended up with "4.98 mW".
+- **An open item is reported as open:** one formal cover was not reached within the time I gave it.
+  Saying so is more useful than a green tick that is not true.
