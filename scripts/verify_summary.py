@@ -74,7 +74,7 @@ def main() -> int:
         f = json.loads(formal.read_text())
         cov_task = next((t for t in f["tasks"] if t["task"] == "cover"), {})
         checks["formal"] = {"result": f["result"], "proofs": f.get("proofs"), "covers": f.get("covers"),
-                            "covers_reached": cov_task.get("reached"),
+                            "covers_reached": cov_task.get("reached"), "covers_total": cov_task.get("total"),
                             "tasks": {t["task"]: t["status"] for t in f["tasks"]}, "source": rel(formal)}
     else:
         problems.append("missing results/formal/summary.json")
@@ -83,8 +83,8 @@ def main() -> int:
     if mut.exists():
         m = json.loads(mut.read_text())
         checks["mutation"] = {"result": m["result"], "mutants": len(m["mutants"]),
-                              "missed": [x["mutant"] for x in m["mutants"]
-                                         if "caught" not in x["sim"] and "caught" not in x.get("formal", "")],
+                              "missed": [x["mutant"] for x in m["mutants"] if x["mutant"] != "control"
+                                         and "caught" not in x["sim"] and "caught" not in x.get("formal", "")],
                               "source": rel(mut)}
     else:
         problems.append("missing results/mutation.json")

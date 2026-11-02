@@ -3,8 +3,9 @@
 Single source of truth for status. Update this before every commit.
 Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's default branch).
 
-**Current state (2026-11-01): Phase 4 complete; PR open.** PR #1 and #2 merged. Open item from Phase 3: the
-formal cover RUN→SHUTDOWN→RUN is unreached up to step 77. Phase 5 (README, docs, close) next.
+**Current state (2026-11-02): Phase 5 complete; final PR open.** PR #1–#3 merged. Repo renamed to
+`soc-pmu-sequencer`. Open item: the formal cover
+RUN→SHUTDOWN→RUN (unreached up to step 77).
 
 ## Phase 0 — Setup and audit
 - [x] Environment check (`scripts/env_check.sh` → `results/env_check.txt`): all tools found. The repo
@@ -62,12 +63,14 @@ formal cover RUN→SHUTDOWN→RUN is unreached up to step 77. Phase 5 (README, d
 - [x] **Gate:** done. Commit.
 
 ## Phase 5 — Docs and close
-- [ ] README (pitch, block diagram, mode table, sequence diagram, generated results table,
-      Reproduce, Limitations, AI assistance).
-- [ ] Final LEARNING and INTERVIEW (30+ questions, required topics).
-- [ ] `results/resume_bullets.md` from `summary.json`.
-- [ ] `make all`.
-- [ ] Final PR; then ask about renaming the repo to `soc-pmu-sequencer`.
+- [x] README: pitch, block diagram, mode table, sequence diagram, results generated from
+      `summary.json` (`scripts/gen_readme_table.py`, checked in CI), Reproduce, Limitations, AI assistance.
+- [x] Final LEARNING and INTERVIEW (31 questions, all required topics).
+- [x] `results/resume_bullets.md` (`scripts/resume_bullets.py`, numbers from `summary.json`).
+- [x] `make all` (verify → flow → breakeven → summary → README → bullets).
+- [x] Final PR.
+- [ ] Owner: run `make all` so the README's "reproduced by Vikyath J" line is true.
+- [x] Repo renamed to `soc-pmu-sequencer` at the owner's request (2026-11-02).
 
 ## Open issues
 - The Phase 1 register-map outputs in PR #1 contain the YAML ON/OFF bug (D-011); the fix is in the
