@@ -3,8 +3,8 @@
 Single source of truth for status. Update this before every commit.
 Spec: `docs/BRIEF.md`. Branch: `rework/pmu`. PRs target `master` (the repo's default branch).
 
-**Current state (2026-11-02): Phase 5 complete; final PR open.** PR #1–#3 merged. After the merge:
-ask the owner about renaming the repo to `soc-pmu-sequencer`. Open item: the formal cover
+**Current state (2026-11-02): Phase 5 complete; final PR open.** PR #1–#3 merged. Repo renamed to
+`soc-pmu-sequencer`. Open item: the formal cover
 RUN→SHUTDOWN→RUN (unreached up to step 77).
 
 ## Phase 0 — Setup and audit
@@ -70,7 +70,7 @@ RUN→SHUTDOWN→RUN (unreached up to step 77).
 - [x] `make all` (verify → flow → breakeven → summary → README → bullets).
 - [x] Final PR.
 - [ ] Owner: run `make all` so the README's "reproduced by Vikyath J" line is true.
-- [ ] Ask the owner about renaming the repo to `soc-pmu-sequencer` (after the merge).
+- [x] Repo renamed to `soc-pmu-sequencer` at the owner's request (2026-11-02).
 
 ## Open issues
 - The Phase 1 register-map outputs in PR #1 contain the YAML ON/OFF bug (D-011); the fix is in the

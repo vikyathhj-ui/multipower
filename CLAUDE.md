@@ -1,4 +1,7 @@
-# soc-pmu-sequencer (repo: vikyathhj-ui/multipower)
+# soc-pmu-sequencer (repo: vikyathhj-ui/soc-pmu-sequencer; renamed from multipower on 2026-11-02)
+
+The local clone stays at `~/projects/multipower` (container `/foss/projects/multipower`): LibreLane
+runs in `flow/runs/` store absolute paths, so the folder is not renamed.
 
 Multi-domain SoC power-management unit: an APB3 register block, Q-Channel handshakes, staged power
 switches, UPF power intent, power-aware simulation, formal safety proofs, and a break-even residency
